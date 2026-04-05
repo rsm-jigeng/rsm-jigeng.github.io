@@ -1,0 +1,15 @@
+---
+title: "Jie Geng"
+image: "files/profile_pic.PNG"
+about:
+  template: jolla
+  links:
+    - icon: envelope
+      href: mailto:jigeng@ucsd.edu
+    - icon: linkedin
+      href: https://www.linkedin.com/in/jie-geng-901bb1378/
+---
+
+MS in Business Analytics, UC San Diego
+
+This website hosts my resume, projects, and coursework for MGTA 495.

@@ -1,0 +1,37 @@
+[
+  {
+    "objectID": "projects.html",
+    "href": "projects.html",
+    "title": "Projects",
+    "section": "",
+    "text": "Course assignments and blog posts will be posted here throughout the quarter.\n\n\n\n\n\n\n\n\n\n\n\n\nMy First Project\n\n\n\n\n\n\n\n\n\nApr 4, 2026\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Jie Geng",
+    "section": "",
+    "text": "MS in Business Analytics, UC San Diego\nThis website hosts my resume, projects, and coursework for MGTA 495."
+  },
+  {
+    "objectID": "projects/project1/index.html",
+    "href": "projects/project1/index.html",
+    "title": "My First Project",
+    "section": "",
+    "text": "This is my first project."
+  },
+  {
+    "objectID": "projects/project1/index.html#project-overview",
+    "href": "projects/project1/index.html#project-overview",
+    "title": "My First Project",
+    "section": "",
+    "text": "This is my first project."
+  },
+  {
+    "objectID": "projects/project1/index.html#what-i-did",
+    "href": "projects/project1/index.html#what-i-did",
+    "title": "My First Project",
+    "section": "What I did",
+    "text": "What I did\n\nData analysis\nVisualization\nModeling"
+  }
+]

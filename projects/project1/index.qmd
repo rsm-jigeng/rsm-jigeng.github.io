@@ -1,0 +1,14 @@
+---
+title: "My First Project"
+date: today
+---
+
+## Project Overview
+
+This is my first project.
+
+## What I did
+
+- Data analysis
+- Visualization
+- Modeling
