@@ -1,6 +1,106 @@
 ---
-title: "My Resume"
+title: "Resume"
+toc: true
+toc-location: right
 ---
 
+<div class="resume-header">
+  <h1>Jie Geng</h1>
+  <p><strong>MS in Business Analytics, UC San Diego</strong></p>
+  <p>
+    <a href="mailto:jigeng@ucsd.edu">jigeng@ucsd.edu</a> |
+    <a href="https://www.linkedin.com/in/jie-geng-901bb1378/" target="_blank">LinkedIn</a> |
+  </p>
+</div>
 
-<iframe src="files/resume.pdf" width="100%" height="800px"></iframe>
+## Summary
+
+Graduate student in Business Analytics at UC San Diego with experience in data analysis, business research, machine learning, and decision support. Interested in roles in business analytics, strategy, consulting, and data-driven problem solving.
+
+## Education
+
+### University of California, San Diego (UCSD)
+**Master of Science in Business Analytics**
+*La Jolla, USA | Expected Jun 2026*
+- Current GPA: 3.63 / 4.0
+
+### Huaqiao University (HQU)
+**Bachelor of Management in International Business**
+*Quanzhou, China | Jun 2025*
+- GPA: 3.96 / 4.0
+- Rank: 1 / 30
+- Dissertation: *Predicting E-commerce User Session Revenue Based on Machine Learning Models*
+
+## Experience
+
+### Vikk AI
+**Consultant**
+*San Diego, USA | Mar 2026 – Jun 2026 (Expected)*
+- Developed an analytics framework for an AI-powered legal information platform using 80,000+ anonymized conversations.
+- Built predictive models to estimate conversion likelihood and economic value of legal conversations.
+- Produced recommendations for prioritization, escalation timing, and conversation flow optimization.
+
+### Zhengzhou Commodity Exchange Futures & Derivatives Institute
+**Data Science Assistant**
+*Zhengzhou, China | Aug 2024 – Oct 2024*
+- Collected, cleaned, and processed large-scale historical market and trading data for research use.
+- Conducted exploratory data analysis and visualization of price trends, volatility, and variable relationships.
+- Supported financial market behavior research through data preparation and case analysis.
+
+### Capgemini
+**Business Analysis Assistant**
+*Shanghai, China | Feb 2024 – May 2024*
+- Supported a strategic marketing project for a senior care client through interviews and questionnaire design.
+- Managed survey collection and screening, producing 220+ valid responses.
+- Used SPSS for reliability tests, descriptive statistics, and t-tests to identify user demand differences.
+
+### Postal Savings Bank of China
+**Financial Assistant**
+*Qinyang, China | Jul 2023 – Sep 2023*
+- Assisted with credit risk assessment through DTI calculations and client financial data review.
+- Cleaned and analyzed credit data using Pandas to support default risk modeling.
+
+### Zhengzhou Dennis Department Store Co., Ltd.
+**Data Analyst**
+*Jiaozuo, China | Jun 2022 – Sep 2022*
+- Automated financial and sales reports using Excel PivotTables and VBA.
+- Queried and analyzed sales data with SQL to support inventory and merchandising decisions.
+
+## Selected Projects
+
+### AI-Driven Legal Information System Analytics
+- Designed a behavior-based segmentation framework to identify high-intent users.
+- Built models to forecast downstream conversion and engagement value.
+- Developed business recommendations to improve user experience and operational performance.
+
+### Employee Promotion Modeling
+- Compared multiple machine learning models including Logistic Regression, Random Forest, Bagging, Gradient Boosting, and AdaBoost.
+- Identified key drivers of promotion outcomes and translated findings into management recommendations.
+
+### E-commerce User Session Revenue Prediction
+- Built classification models to predict online session revenue conversion.
+- Evaluated performance using accuracy, precision, recall, F1-score, and AUC.
+- Found AdaBoost to be the strongest-performing model in terms of predictive balance and stability.
+
+## Publication
+
+**Li, B., Geng, J., Lu, Q., & Xing, Z. (2024).**
+*Optimizing Employee Promotions: A Machine Learning Approach Using AdaBoost.*
+Presented at the 3rd International Conference on Financial Technology and Business Analysis (ICFTBA 2024), Murcia, Spain.
+
+## Awards & Leadership
+
+- **First Place**, Provincial Finals — National Finance Challenge 2024
+- **Third Place**, School Level — China International College Students' Innovation Competition 2024
+- **First Place** — China University Business Elite Challenge
+- **Second Place** — EY ESG National College Innovation Competition
+- Class Representative, HQU International Business Class of 2025
+- Teaching Assistant, HQU International School
+
+## Skills
+
+**Programming & Analytics:** Python, R, SQL, Tableau, SPSS, Excel, VBA
+
+**Python Libraries:** Pandas, NumPy, Matplotlib, Seaborn, Pyecharts
+
+**Languages:** Mandarin Chinese (Native), English

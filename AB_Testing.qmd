@@ -1,0 +1,675 @@
+---
+title: A/B Testing a Call to Action
+subtitle: "Simulating Key Ideas from Classical Frequentist Statistics"
+author: "Jie Geng"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    toc-location: right
+    theme: cosmo
+    code-fold: false
+    html-math-method: mathjax
+    fig-format: png
+    fig-responsive: true
+execute:
+  echo: false
+  warning: false
+  message: false
+include-in-header:
+  text: |
+    <style>
+      :root {
+        --site-blue: #2f5da8;
+        --site-blue-dark: #284a80;
+        --site-blue-soft: #eef4fc;
+        --site-blue-mid: #dce7f6;
+        --site-text: #34495e;
+        --site-muted: #6f8499;
+        --site-border: #cfdbec;
+        --site-white: #fbfdff;
+      }
+
+      body {
+        color: var(--site-text);
+        background: #f6f9fe;
+      }
+
+      main.content {
+        max-width: 980px;
+        margin: 0 auto;
+      }
+
+      .quarto-title-block .quarto-title-banner {
+        background: transparent !important;
+        padding-bottom: 0.25rem;
+        margin-bottom: 0.3rem;
+      }
+
+      .quarto-title-block .title {
+        color: var(--site-blue-dark) !important;
+        font-weight: 780 !important;
+        letter-spacing: -0.02em;
+        font-size: 3rem !important;
+        line-height: 1.08 !important;
+        margin-bottom: 0.35rem !important;
+      }
+
+      .quarto-title-block .subtitle {
+        color: var(--site-text) !important;
+        font-size: 1.25rem !important;
+        font-weight: 450 !important;
+        opacity: 0.98;
+      }
+
+      .quarto-title-meta-heading {
+        color: var(--site-muted) !important;
+        letter-spacing: 0.01em;
+      }
+
+      .quarto-title-meta-contents {
+        color: var(--site-text) !important;
+      }
+
+      h2 {
+        color: var(--site-blue-dark);
+        font-weight: 780;
+        font-size: 2.35rem;
+        letter-spacing: -0.02em;
+        margin-top: 2.4rem;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid var(--site-border);
+        padding-bottom: 0.18rem;
+      }
+
+      h3 {
+        color: var(--site-blue-dark);
+        font-weight: 680;
+      }
+
+      p {
+        line-height: 1.86;
+        font-size: 1.08rem;
+      }
+
+      .cell-output-display {
+        margin-top: 0.8rem;
+        margin-bottom: 1.35rem;
+      }
+
+      .cell-output-display img {
+        border-radius: 18px;
+        box-shadow: 0 10px 28px rgba(47, 93, 168, 0.10);
+      }
+
+      .quarto-figure {
+        margin-top: 0.8rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .column-margin {
+        color: var(--site-muted);
+      }
+    </style>
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+knitr::opts_chunk$set(
+  dev = "png",
+  dpi = 240,
+  fig.retina = 2,
+  out.width = "100%",
+  fig.align = "center"
+)
+
+library(ggplot2)
+library(dplyr)
+library(tibble)
+library(purrr)
+library(gt)
+library(broom)
+library(scales)
+
+set.seed(2026)
+
+site_blue <- "#2F5DA8"
+site_blue_dark <- "#284A80"
+site_text <- "#34495E"
+site_muted <- "#6F8499"
+site_soft <- "#EEF4FC"
+site_soft2 <- "#F5F9FF"
+site_mid <- "#DCE7F6"
+site_border <- "#CFDBEC"
+site_grid <- "#DCE5F2"
+site_white <- "#FBFDFF"
+
+base_blog_theme <- theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(
+      face = "bold",
+      size = 19,
+      color = site_blue_dark,
+      margin = margin(b = 4)
+    ),
+    plot.subtitle = element_text(
+      size = 11.5,
+      color = site_text,
+      margin = margin(b = 10)
+    ),
+    axis.title = element_text(face = "bold", color = site_text),
+    axis.text = element_text(color = site_text),
+    panel.grid.minor = element_blank(),
+    panel.grid.major = element_line(color = site_grid, linewidth = 0.45),
+    panel.background = element_rect(fill = site_soft2, color = NA),
+    plot.background = element_rect(fill = site_soft, color = NA),
+    panel.border = element_rect(color = site_border, fill = NA, linewidth = 0.7),
+    strip.background = element_rect(fill = site_mid, color = NA),
+    strip.text = element_text(face = "bold", color = site_blue_dark),
+    legend.position = "none",
+    plot.caption = element_text(color = site_muted, size = 10.3),
+    plot.margin = margin(18, 18, 18, 18)
+  )
+
+theme_set(base_blog_theme)
+
+style_gt <- function(tbl) {
+  tbl |>
+    tab_options(
+      table.background.color = site_white,
+      heading.background.color = site_white,
+      column_labels.background.color = "#EAF1FB",
+      table.border.top.color = site_blue,
+      table.border.bottom.color = site_blue,
+      heading.border.bottom.color = site_blue,
+      column_labels.border.bottom.color = site_border,
+      table.font.color = site_text,
+      data_row.padding = px(10),
+      table_body.hlines.color = "#DCE6F3",
+      row_group.border.top.color = site_border,
+      table.width = pct(100)
+    ) |>
+    tab_style(
+      style = list(
+        cell_text(weight = "bold", color = site_blue_dark, size = px(20))
+      ),
+      locations = cells_title(groups = "title")
+    ) |>
+    tab_style(
+      style = list(
+        cell_text(color = site_text, size = px(14))
+      ),
+      locations = cells_title(groups = "subtitle")
+    ) |>
+    opt_row_striping() |>
+    cols_align(align = "center")
+}
+
+pi_A <- 0.22
+pi_B <- 0.18
+theta_true <- pi_A - pi_B
+
+n_main <- 1000
+A <- rbinom(n_main, size = 1, prob = pi_A)
+B <- rbinom(n_main, size = 1, prob = pi_B)
+
+ab_data <- tibble(
+  outcome = c(A, B),
+  group = rep(c("A", "B"), each = n_main),
+  D = if_else(group == "A", 1, 0)
+)
+
+pA_hat <- mean(A)
+pB_hat <- mean(B)
+theta_hat <- pA_hat - pB_hat
+```
+
+## Introduction
+
+A landing page usually asks for only a tiny action from a visitor: one click, one email address, one moment of attention. Yet small wording changes can make that request feel either inviting or easy to ignore. That is exactly why call-to-action copy is such a natural setting for A/B testing.
+
+Imagine a homepage with a newsletter signup box. One version of the page uses the line **CTA A**: "Sign up for our newsletter here!" A second version uses **CTA B**: "Stay up to date by signing up!" The business question is simple: which message leads to more subscriptions?
+
+An A/B test answers that question by splitting incoming traffic at random. Some visitors see version A and others see version B. Once enough people have passed through the page, the two sign-up rates can be compared. Behind that very practical workflow sits a deeper statistical story about estimation, uncertainty, sampling variation, and false positives. The goal of this post is to use one simple experiment to walk through those core ideas in classical frequentist inference.
+
+## The A/B Test as a Statistical Problem
+
+At the individual level, each visitor generates a binary outcome: they either subscribe or they do not. That makes the Bernoulli model a natural starting point. If $\pi$ denotes the probability that a visitor signs up, then each observation is a draw from a Bernoulli distribution with parameter $\pi$.
+
+The key complication is that the probability of signing up may depend on which CTA the visitor sees. Let $\pi_A$ denote the sign-up probability under CTA A and let $\pi_B$ denote the sign-up probability under CTA B. The quantity of real interest is not either probability by itself, but their difference:
+
+$$
+\theta = \pi_A - \pi_B
+$$
+
+If $\theta$ is positive, CTA A performs better. If it is negative, CTA B performs better. If it is zero, the two messages are equally effective.
+
+In practice, the true value of $\theta$ is unknown and must be estimated from data. A natural estimator is the difference in sample means:
+
+$$
+\hat{\theta} = \bar{X}_A - \bar{X}_B
+$$
+
+Because each outcome is either 0 or 1, the sample mean in each group is just the observed sign-up rate. So $\bar{X}_A = \hat{\pi}_A$ and $\bar{X}_B = \hat{\pi}_B$. In other words, the estimator here is nothing more exotic than the observed difference in conversion rates across the two page variants.
+
+## Simulating Data
+
+In a real experiment, the truth sits behind the data and is never directly visible. Simulation turns that relationship around: the truth is specified first, and the observed data are generated from it. That makes simulation a useful way to study how a statistical method behaves when the answer is already known.
+
+For the rest of this post, suppose CTA A has a true sign-up probability of $0.22$ and CTA B has a true sign-up probability of $0.18$. Under those assumptions, the true treatment effect is
+
+$$
+\theta = 0.22 - 0.18 = 0.04
+$$
+
+So the "better" CTA improves sign-up rates by four percentage points. The analysis below begins by simulating 1,000 visitors for each group, creating a synthetic experiment with 2,000 total observations.
+
+```{r}
+summary_tbl <- tibble(
+  Group = c("CTA A", "CTA B"),
+  `True sign-up probability` = c(pi_A, pi_B),
+  `Simulated sample proportion` = c(pA_hat, pB_hat),
+  `Sample size` = c(n_main, n_main)
+)
+
+summary_tbl |>
+  mutate(
+    `True sign-up probability` = percent(`True sign-up probability`, accuracy = 0.1),
+    `Simulated sample proportion` = percent(`Simulated sample proportion`, accuracy = 0.1)
+  ) |>
+  gt() |>
+  tab_header(
+    title = "Simulated A/B Test Data",
+    subtitle = "1,000 visitors per CTA"
+  ) |>
+  style_gt()
+```
+
+As expected, the simulated sample proportions are close to the truth but not identical to it. That small gap is not a mistake; it is the whole point. Even when the underlying probabilities are fixed, random samples still wobble.
+
+## The Law of Large Numbers
+
+One reason analysts trust sample averages at all is the Law of Large Numbers. Informally, it says that averages become more stable as more observations accumulate. In the A/B setting, that idea explains why the difference in observed sign-up rates eventually becomes a reliable guide to the true treatment effect.
+
+To make that visible, the two simulated outcome vectors can be differenced observation by observation, and the running average of those differences can be tracked as the sample grows from 1 pair to 1,000 pairs.
+
+```{r}
+#| fig-width: 9
+#| fig-height: 5.2
+
+lln_df <- tibble(
+  i = 1:n_main,
+  diff_i = A - B,
+  cumulative_avg = cumsum(diff_i) / i
+)
+
+ggplot(lln_df, aes(x = i, y = cumulative_avg)) +
+  geom_line(linewidth = 1.15, color = site_blue_dark) +
+  geom_hline(
+    yintercept = theta_true,
+    linetype = "dashed",
+    linewidth = 1.05,
+    color = site_blue
+  ) +
+  scale_x_continuous(labels = comma) +
+  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  labs(
+    title = "The Law of Large Numbers in an A/B Test",
+    subtitle = "Running average of the element-wise difference between CTA A and CTA B outcomes",
+    x = "Number of paired observations",
+    y = "Cumulative average difference",
+    caption = "Dashed line = true treatment effect (4 percentage points)"
+  )
+```
+
+The beginning of the curve is chaotic. With only a handful of observations, one extra signup or one extra non-signup can move the average sharply. But that instability fades as the sample grows. The curve does not become perfectly flat, yet it clearly settles toward the true effect. This is the first major lesson of the post: large samples do not eliminate randomness, but they do discipline it.
+
+## Bootstrap Standard Errors
+
+A point estimate answers only one question: what effect seems most plausible given the observed data? It does not answer the equally important question of how noisy that estimate is. Two experiments may produce the same estimated treatment effect but differ dramatically in how uncertain that estimate should feel.
+
+The bootstrap offers a practical way to measure that uncertainty. Rather than relying entirely on a closed-form formula, the bootstrap repeatedly resamples from the observed data, computes the statistic of interest in each resample, and then uses the spread of those resampled statistics as an estimate of the standard error.
+
+```{r}
+#| include: false
+
+B_boot <- 1000
+
+boot_thetas <- replicate(B_boot, {
+  A_star <- sample(A, size = n_main, replace = TRUE)
+  B_star <- sample(B, size = n_main, replace = TRUE)
+  mean(A_star) - mean(B_star)
+})
+
+boot_se <- sd(boot_thetas)
+
+analytic_se <- sqrt(
+  pA_hat * (1 - pA_hat) / n_main +
+    pB_hat * (1 - pB_hat) / n_main
+)
+
+ci_lower <- theta_hat - 1.96 * boot_se
+ci_upper <- theta_hat + 1.96 * boot_se
+```
+
+```{r}
+boot_results <- tibble(
+  Statistic = c(
+    "Estimated treatment effect",
+    "Bootstrap standard error",
+    "Analytical standard error",
+    "95% CI lower bound",
+    "95% CI upper bound"
+  ),
+  Value = c(theta_hat, boot_se, analytic_se, ci_lower, ci_upper)
+)
+
+boot_results |>
+  mutate(Value = percent(Value, accuracy = 0.01)) |>
+  gt() |>
+  tab_header(
+    title = "Bootstrap Results",
+    subtitle = "Uncertainty around the treatment effect"
+  ) |>
+  style_gt()
+```
+
+```{r}
+#| fig-width: 9
+#| fig-height: 5.2
+
+boot_df <- tibble(theta_star = boot_thetas)
+
+ggplot(boot_df, aes(x = theta_star)) +
+  geom_histogram(
+    bins = 34,
+    fill = site_blue,
+    color = "white",
+    linewidth = 0.28,
+    alpha = 0.9
+  ) +
+  geom_vline(
+    xintercept = theta_hat,
+    linetype = "dashed",
+    linewidth = 1.05,
+    color = site_blue_dark
+  ) +
+  geom_vline(
+    xintercept = c(ci_lower, ci_upper),
+    linetype = "dotted",
+    linewidth = 1,
+    color = site_blue_dark
+  ) +
+  scale_x_continuous(labels = percent_format(accuracy = 1)) +
+  labs(
+    title = "Bootstrap Distribution of the Estimated Treatment Effect",
+    subtitle = "1,000 bootstrap resamples",
+    x = expression(hat(theta)^"*"),
+    y = "Count",
+    caption = "Dashed line = observed estimate; dotted lines = bootstrap 95% confidence interval"
+  )
+```
+
+Two things stand out here. First, the bootstrap standard error and the analytical standard error are very close, which is a reassuring sign that the uncertainty estimate is not an artifact of one particular method. Second, the resulting 95% confidence interval excludes zero. In plain language, the observed data are not just consistent with CTA A being better; they are inconsistent with the idea that the two messages perform equally well.
+
+## The Central Limit Theorem
+
+The next step is to move from one experiment to the behavior of the estimator across many hypothetical repetitions of the experiment. This is where the Central Limit Theorem becomes useful. Even when the underlying data are Bernoulli rather than Normally distributed, the sampling distribution of a sample mean becomes approximately Normal as the sample size grows. Because $\hat{\theta}$ is built from sample means, the same logic applies to it as well.
+
+To show that visually, the simulation below repeats the entire A/B test 1,000 times for each of four sample sizes: $n \in \{25, 50, 100, 500\}$.
+
+```{r}
+#| fig-width: 9.2
+#| fig-height: 6.4
+
+sample_sizes <- c(25, 50, 100, 500)
+n_rep <- 1000
+
+clt_df <- map_dfr(sample_sizes, function(n) {
+  tibble(
+    n = n,
+    theta_hat = replicate(n_rep, {
+      A_n <- rbinom(n, 1, pi_A)
+      B_n <- rbinom(n, 1, pi_B)
+      mean(A_n) - mean(B_n)
+    })
+  )
+})
+
+ggplot(clt_df, aes(x = theta_hat)) +
+  geom_histogram(
+    bins = 22,
+    fill = site_blue,
+    color = "white",
+    linewidth = 0.24,
+    alpha = 0.9
+  ) +
+  geom_vline(
+    xintercept = theta_true,
+    linetype = "dashed",
+    linewidth = 1,
+    color = site_blue_dark
+  ) +
+  facet_wrap(~ n, ncol = 2, scales = "fixed") +
+  scale_x_continuous(labels = percent_format(accuracy = 1)) +
+  labs(
+    title = "The Central Limit Theorem in Action",
+    subtitle = "Sampling distribution of the estimated treatment effect at different sample sizes",
+    x = expression(hat(theta)),
+    y = "Count",
+    caption = "Each panel is based on 1,000 simulated experiments"
+  )
+```
+
+The smaller-sample histograms are rough and uneven, which makes sense: with limited data, there is still a lot of discreteness and noise in the estimator. But as the sample size increases, the histograms become smoother, tighter, and more bell-shaped. That is the CLT at work. It is also the bridge from descriptive simulation to formal inference, because approximate Normality is what makes z-based testing possible in large samples.
+
+## Hypothesis Testing
+
+At this point the analysis has everything needed for a formal test. The business question becomes a statistical one: could an observed difference of this size reasonably have appeared if the two CTAs were actually identical?
+
+The null and alternative hypotheses are
+
+$$
+H_0: \theta = 0
+$$
+
+and
+
+$$
+H_1: \theta \neq 0
+$$
+
+respectively.
+
+The observed estimate is converted into a test statistic by scaling it relative to its own uncertainty:
+
+$$
+z = \frac{\hat{\theta} - 0}{SE(\hat{\theta})}
+$$
+
+That standardization matters. Under the CLT, $\hat{\theta}$ is approximately Normal in large samples, and under the null its mean is zero. Once divided by its standard error, the statistic is approximately distributed as $N(0,1)$. That reference distribution is what makes a p-value possible.
+
+Strictly speaking, this setup is closer to a large-sample z-test than to a classical t-test. The exact t framework belongs to Normal data with estimated variance. Here the data are Bernoulli, so the Normal approximation comes from asymptotics rather than an exact finite-sample theorem. In a sample this large, the distinction is practically minor, but conceptually it is worth keeping straight.
+
+```{r}
+z_stat <- theta_hat / analytic_se
+p_value <- 2 * (1 - pnorm(abs(z_stat)))
+
+hypothesis_tbl <- tibble(
+  Quantity = c("Estimated effect", "Standard error", "z-statistic", "Two-sided p-value"),
+  Value = c(
+    percent(theta_hat, accuracy = 0.01),
+    percent(analytic_se, accuracy = 0.01),
+    number(z_stat, accuracy = 0.01),
+    number(p_value, accuracy = 0.0001)
+  )
+)
+
+hypothesis_tbl |>
+  gt() |>
+  tab_header(
+    title = "Hypothesis Test for the Difference in Sign-up Rates",
+    subtitle = "Large-sample z-based inference"
+  ) |>
+  style_gt()
+```
+
+The p-value is small enough to reject the null at conventional significance levels. In practical terms, the observed gap between the two CTAs is too large to dismiss as ordinary sampling noise. The data point toward a real performance difference.
+
+## The T-Test as a Regression
+
+One of the most elegant parts of this example is that the two-sample test can be rewritten as a regression with almost no extra machinery. That matters because regression is the language most empirical work eventually speaks.
+
+Stack the two groups into one dataset. Let $Y_i$ equal 1 if visitor $i$ signs up and 0 otherwise, and let $D_i$ equal 1 if that visitor saw CTA A and 0 if they saw CTA B. Then estimate
+
+$$
+Y_i = \beta_0 + \beta_1 D_i + \varepsilon_i
+$$
+
+In this model, $\beta_0$ is the mean outcome for the B group, so it estimates $\pi_B$. The sum $\beta_0 + \beta_1$ is the mean outcome for the A group, so it estimates $\pi_A$. That means $\beta_1$ itself is exactly the treatment effect:
+
+$$
+\beta_1 = \pi_A - \pi_B = \theta
+$$
+
+So the regression coefficient on the treatment indicator should match the earlier difference-in-means estimate.
+
+```{r}
+reg_fit <- lm(outcome ~ D, data = ab_data)
+reg_tidy <- tidy(reg_fit)
+
+beta1_hat <- reg_tidy$estimate[reg_tidy$term == "D"]
+beta1_se  <- reg_tidy$std.error[reg_tidy$term == "D"]
+beta1_t   <- reg_tidy$statistic[reg_tidy$term == "D"]
+beta1_p   <- reg_tidy$p.value[reg_tidy$term == "D"]
+
+reg_compare_tbl <- tibble(
+  Method = c("Two-sample approach", "Regression approach"),
+  Estimate = c(theta_hat, beta1_hat),
+  `Std. Error` = c(analytic_se, beta1_se),
+  Statistic = c(z_stat, beta1_t),
+  `p-value` = c(p_value, beta1_p)
+)
+
+reg_compare_tbl |>
+  mutate(
+    Estimate = percent(Estimate, accuracy = 0.01),
+    `Std. Error` = percent(`Std. Error`, accuracy = 0.01),
+    Statistic = number(Statistic, accuracy = 0.01),
+    `p-value` = number(`p-value`, accuracy = 0.0001)
+  ) |>
+  gt() |>
+  tab_header(
+    title = "Two-Sample Test and Regression Comparison",
+    subtitle = "Same estimate, nearly identical inference"
+  ) |>
+  style_gt()
+```
+
+The numbers line up almost perfectly. That is not a coincidence; it is the same comparison written in two dialects. The practical value of the regression version is that it scales gracefully. Once the problem is in regression form, adding covariates, interactions, or multiple treatments becomes straightforward.
+
+## The Problem with Peeking
+
+So far, the story has assumed a well-behaved experiment: run the test, collect the planned sample, analyze once. Real organizations are rarely that patient. A manager may want to peek at results every few hours and stop the test the moment one variant looks significant.
+
+That instinct is understandable but statistically dangerous. A single test at the 5% significance level has a 5% chance of generating a false positive when the null is true. Repeating the test over and over on accumulating data creates multiple chances to get lucky noise. The overall false-positive rate can climb far above 5%.
+
+To see how large that distortion can be, the simulation below creates a world where there is no true difference at all: $\pi_A = \pi_B = 0.20$. Each experiment is checked after every 100 observations per group, up to 1,000 observations per group, and the process records whether any interim look crosses the 0.05 threshold.
+
+```{r}
+#| include: false
+
+set.seed(2027)
+
+pi_null <- 0.20
+n_total <- 1000
+peek_points <- seq(100, 1000, by = 100)
+n_exp <- 10000
+
+run_one_experiment <- function() {
+  A_null <- rbinom(n_total, 1, pi_null)
+  B_null <- rbinom(n_total, 1, pi_null)
+
+  pvals <- map_dbl(peek_points, function(n) {
+    A_n <- A_null[1:n]
+    B_n <- B_null[1:n]
+
+    pA <- mean(A_n)
+    pB <- mean(B_n)
+    theta_hat_n <- pA - pB
+
+    se_n <- sqrt(
+      pA * (1 - pA) / n +
+        pB * (1 - pB) / n
+    )
+
+    if (se_n == 0) return(1)
+
+    z_n <- theta_hat_n / se_n
+    2 * (1 - pnorm(abs(z_n)))
+  })
+
+  tibble(
+    any_sig = any(pvals < 0.05),
+    min_p = min(pvals)
+  )
+}
+
+peeking_results <- map_dfr(1:n_exp, ~ run_one_experiment())
+false_positive_rate_peeking <- mean(peeking_results$any_sig)
+single_test_rate <- 0.05
+```
+
+```{r}
+peeking_tbl <- tibble(
+  Scenario = c("Single test at alpha = 0.05", "Peeking every 100 visitors per group"),
+  `False positive rate` = c(single_test_rate, false_positive_rate_peeking)
+)
+
+peeking_tbl |>
+  mutate(`False positive rate` = percent(`False positive rate`, accuracy = 0.1)) |>
+  gt() |>
+  tab_header(
+    title = "Peeking Inflates Type I Error",
+    subtitle = "Sequential looks create extra false-positive opportunities"
+  ) |>
+  style_gt()
+```
+
+```{r}
+#| fig-width: 9
+#| fig-height: 5.2
+
+ggplot(peeking_results, aes(x = min_p)) +
+  geom_histogram(
+    bins = 35,
+    fill = site_blue,
+    color = "white",
+    linewidth = 0.22,
+    alpha = 0.9
+  ) +
+  geom_vline(
+    xintercept = 0.05,
+    linetype = "dashed",
+    linewidth = 1.05,
+    color = site_blue_dark
+  ) +
+  labs(
+    title = "Minimum p-value Across Sequential Peeks Under the Null",
+    subtitle = "10,000 simulated experiments with no true treatment effect",
+    x = "Minimum p-value observed across 10 peeks",
+    y = "Count",
+    caption = "Dashed line = 0.05 significance threshold"
+  )
+```
+
+The result is sobering. A process that feels like "just checking in" can nearly quadruple the false-positive rate. For A/B testing in practice, that means patience is not merely a managerial virtue; it is part of valid inference. If early stopping is going to be allowed, it needs a method designed for sequential testing rather than ordinary repeated p-values.
+
+## Conclusion
+
+A/B testing often looks like a lightweight product tool, but under the surface it is a compact lesson in frequentist statistics. The difference in observed conversion rates is an estimator; the Law of Large Numbers explains why it stabilizes; the bootstrap shows how uncertainty can be quantified; the Central Limit Theorem explains why Normal-based inference becomes reasonable; and hypothesis testing turns that logic into a formal decision rule.
+
+The regression reframing shows that this same experiment fits naturally into a broader modeling framework, while the peeking example shows how easy it is to misuse statistical evidence when operational convenience takes over. That, in the end, may be the most useful lesson from the entire exercise: the strength of an A/B test comes not only from having data, but from respecting the statistical logic that makes those data trustworthy.

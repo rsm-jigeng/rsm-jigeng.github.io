@@ -3,13 +3,63 @@ title: "Jie Geng"
 image: "files/profile_pic.PNG"
 about:
   template: jolla
+  image-shape: round
+  image-width: 15em
   links:
     - icon: envelope
+      text: Email
       href: mailto:jigeng@ucsd.edu
     - icon: linkedin
+      text: LinkedIn
       href: https://www.linkedin.com/in/jie-geng-901bb1378/
+    - icon: file-earmark-text
+      text: Resume
+      href: resume.qmd
+    - icon: folder
+      text: Projects
+      href: projects.qmd
 ---
 
-MS in Business Analytics, UC San Diego
+## Welcome
 
-This website hosts my resume, projects, and coursework for MGTA 495.
+MS in Business Analytics, **UC San Diego**
+
+I am a graduate student in Business Analytics at UC San Diego with interests in data analysis, business strategy, and decision-making through data-driven insights. This website presents my academic background, selected projects, and coursework completed for MGTA 495.
+
+::: {.callout-note appearance="simple"}
+I am especially interested in applying analytics to solve real business problems in marketing, operations, and strategy.
+:::
+
+::: {.highlights-section}
+## Highlights
+
+::: {.columns}
+::: {.column width="33%"}
+### Projects
+I have worked on projects involving data analysis, business problem solving, and applied modeling. Visit the Projects page to see examples of my work.
+:::
+
+::: {.column width="33%"}
+### Coursework
+My coursework at UC San Diego has strengthened my foundation in analytics, statistics, and business decision-making.
+:::
+:::
+:::
+
+## Quick Facts
+
+**Program:** MS in Business Analytics
+
+**University:** UC San Diego
+
+**Focus Areas:** Data analytics, business insights, decision-making
+
+**Website Purpose:** Resume, projects, and MGTA 495 coursework
+
+## Explore More
+
+<div class="homepage-buttons">
+  <a href="resume.qmd" class="custom-button">View Resume</a>
+  <a href="projects.qmd" class="custom-button">View Projects</a>
+  <a href="mailto:jigeng@ucsd.edu" class="custom-button">Contact Me</a>
+</div>

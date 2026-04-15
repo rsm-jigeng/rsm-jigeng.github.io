@@ -1,0 +1,35 @@
+---
+title: "Coursework"
+toc: true
+toc-location: right
+---
+
+
+## Learning Goals
+
+::: {.goal-card}
+Through my graduate study, I aim to strengthen my ability to:
+
+- translate business questions into analytical problems
+- communicate insights clearly
+- support decisions with data
+:::
+
+## Relevant Coursework
+
+::: {.course-card}
+### [A/B Testing (MGTA 495)](AB_Testing.qmd)
+
+Simulation of A/B experiments, hypothesis testing, and statistical inference.
+
+**Key Topics**
+- Experimental design
+
+- Hypothesis testing
+
+- Bootstrap standard errors
+
+- Central Limit Theorem
+
+- A/B test evaluation
+:::

@@ -10,13 +10,13 @@ website:
         text: About
       - href: resume.qmd
         text: Resume
-      - href: projects.qmd
-        text: Projects
+      - href: coursework.qmd
+        text: Coursework
 
 format:
   html:
     theme:
       - cosmo
       - brand
-    css: styles.css
+    css: style.css
     toc: true

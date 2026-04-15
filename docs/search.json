@@ -4,14 +4,14 @@
     "href": "projects.html",
     "title": "Projects",
     "section": "",
-    "text": "Course assignments and blog posts will be posted here throughout the quarter.\n\n\n\n\n\n\n\n\n\n\n\n\nMy First Project\n\n\n\n\n\n\n\n\n\nApr 4, 2026\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNo matching items"
+    "text": "Course assignments and blog posts will be posted here throughout the quarter.\n\n\n\n\n\n\n\n\n\n\n\n\nMy First Project\n\n\n\n\n\n\n\n\n\nApr 14, 2026\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "index.html",
     "href": "index.html",
     "title": "Jie Geng",
     "section": "",
-    "text": "MS in Business Analytics, UC San Diego\nThis website hosts my resume, projects, and coursework for MGTA 495."
+    "text": "MS in Business Analytics, UC San Diego\nI am a graduate student in Business Analytics at UC San Diego with interests in data analysis, business strategy, and decision-making through data-driven insights. This website presents my academic background, selected projects, and coursework completed for MGTA 495.\n\n\n\n\n\n\nI am especially interested in applying analytics to solve real business problems in marketing, operations, and strategy."
   },
   {
     "objectID": "projects/project1/index.html",
@@ -33,5 +33,558 @@
     "title": "My First Project",
     "section": "What I did",
     "text": "What I did\n\nData analysis\nVisualization\nModeling"
+  },
+  {
+    "objectID": "presentation.html#why-animation-matters",
+    "href": "presentation.html#why-animation-matters",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "",
+    "text": "feels static\nless visual interest\nlooks like plain notes\n\n\n\n\n\n\ndraws attention\nfeels modern\nmore polished\n\n\n\n\n\nEven very small motion can make a Quarto site feel more intentional and more professional."
+  },
+  {
+    "objectID": "presentation.html#three-easy-animation-ideas",
+    "href": "presentation.html#three-easy-animation-ideas",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "Three easy animation ideas",
+    "text": "Three easy animation ideas\n\n\n\n\nLevel 1\n\n\nFade-in entrance\nContent appears softly when the slide step is revealed.\n\nopacity + translateY + keyframes\n\n\n\n\n\n\nLevel 2\n\n\nHover lift\nA card slightly rises and gains shadow when the mouse moves over it.\n\ntransition + transform + box-shadow\n\n\n\n\n\n\nLevel 3\n\n\nButton micro-interaction\nSmall motion on buttons makes your page feel more interactive.\n\nClick me\n\n\n\n\n\n\nThese three are a good starting point because they are easy to build, easy to control, and already make a website look much more polished."
+  },
+  {
+    "objectID": "presentation.html#how-these-animations-actually-work",
+    "href": "presentation.html#how-these-animations-actually-work",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "How these animations actually work",
+    "text": "How these animations actually work\n\nThe basic logic\n\n\n1. Add a class to the element\nIn HTML, a class is just a label you attach to an element so CSS can style it.\nHTML: &lt;div class=\"hover-lift\"&gt;This card lifts on hover&lt;/div&gt;\nQuarto: ::: {.hover-lift} This card lifts on hover :::\nIn other words, Quarto’s ::: block often plays the same role as an HTML &lt;div&gt;.\n\n\n2. Define the style in CSS\nThen CSS tells that class what to do. A simplified example：\n.hover-lift { transition: transform 0.3s ease; }\n.hover-lift:hover { transform: translateY(-8px); }\n\n\n3. Trigger the animation\nFor entrance effects, RevealJS can reveal a fragment step by step. For hover effects, the trigger is simply :hover."
+  },
+  {
+    "objectID": "presentation.html#what-else-is-possible",
+    "href": "presentation.html#what-else-is-possible",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "What else is possible?",
+    "text": "What else is possible?\nThese are just examples, not the only options.\n\n\n\nFancy 01\n\n\nGlassmorphism cards\nSoft transparency, blur, layered shadows, and subtle floating motion.\n\n\n\n\nFancy 02\n\n\nShimmer loading effect\nA moving light sweep adds energy to cards, sections, or callouts.\n\n\n\n\nFancy 03\n\n\nGlow borders\nAnimated gradient borders create a more premium, high-tech feel.\n\n\n\n\nFancy 04\n\n\nOrbital highlight\nA blurred glow rotates around the card to create a dynamic spotlight effect.\n\n\n\n\nFancy 05\n\n\nGradient text + animated underline\nGreat for hero titles, featured sections, or portfolio headers.\n\n\n\n\nFancy 06\n\n\nStaggered entrance system\nMultiple items appear one after another for a more designed presentation flow."
+  },
+  {
+    "objectID": "presentation.html#where-to-find-inspiration-resources",
+    "href": "presentation.html#where-to-find-inspiration-resources",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "Where to find inspiration & resources",
+    "text": "Where to find inspiration & resources\n\n\n\n\nInspiration\n\nDesign inspiration\nDribbble → animation + UI ideas\nAwwwards → high-end web interactions\nBehance → full project case studies\nPinterest → quick visual exploration\n\nSearch keywords: “UI animation”, “micro interaction”\n\n\n\n\n\nTools & Code\n\nAnimation resources\nCodePen → ready-to-use CSS demos\nGSAP → advanced animation library\nAnimate.css → simple plug-and-play effects\nUI libraries (Tailwind UI, Flowbite)\n\nCopy → tweak → integrate into Quarto\n\n\n\n\n\nGood animation design is rarely invented from scratch. Most of the time, you observe → copy → simplify → adapt.\n\n\nFinal tip\n\nThink like a designer, not just a coder\nDon’t add animation everywhere, use it in an appropriate way"
+  },
+  {
+    "objectID": "presentation.html",
+    "href": "presentation.html",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "",
+    "text": "feels static\nless visual interest\nlooks like plain notes\n\n\n\n\n\n\ndraws attention\nfeels modern\nmore polished\n\n\n\n\n\nEven very small motion can make a Quarto site feel more intentional and more professional."
+  },
+  {
+    "objectID": "personal_website-master/CODE_OF_CONDUCT.html",
+    "href": "personal_website-master/CODE_OF_CONDUCT.html",
+    "title": "Contributor Covenant Code of Conduct",
+    "section": "",
+    "text": "In the interest of fostering an open and welcoming environment, we as contributors and maintainers pledge to making participation in our project and our community a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, religion, or sexual identity and orientation.\n\n\n\nExamples of behavior that contributes to creating a positive environment include:\n\nUsing welcoming and inclusive language\nBeing respectful of differing viewpoints and experiences\nGracefully accepting constructive criticism\nFocusing on what is best for the community\nShowing empathy towards other community members\n\nExamples of unacceptable behavior by participants include:\n\nThe use of sexualized language or imagery and unwelcome sexual attention or advances\nTrolling, insulting/derogatory comments, and personal or political attacks\nPublic or private harassment\nPublishing others’ private information, such as a physical or electronic address, without explicit permission\nOther conduct which could reasonably be considered inappropriate in a professional setting\n\n\n\n\nProject maintainers are responsible for clarifying the standards of acceptable behavior and are expected to take appropriate and fair corrective action in response to any instances of unacceptable behavior.\nProject maintainers have the right and responsibility to remove, edit, or reject comments, commits, code, wiki edits, issues, and other contributions that are not aligned to this Code of Conduct, or to ban temporarily or permanently any contributor for other behaviors that they deem inappropriate, threatening, offensive, or harmful.\n\n\n\nThis Code of Conduct applies both within project spaces and in public spaces when an individual is representing the project or its community. Examples of representing a project or community include using an official project e-mail address, posting via an official social media account, or acting as an appointed representative at an online or offline event. Representation of a project may be further defined and clarified by project maintainers.\n\n\n\nInstances of abusive, harassing, or otherwise unacceptable behavior may be reported by contacting the project team at vbhogayata@gmail.com. All complaints will be reviewed and investigated and will result in a response that is deemed necessary and appropriate to the circumstances. The project team is obligated to maintain confidentiality with regard to the reporter of an incident. Further details of specific enforcement policies may be posted separately.\nProject maintainers who do not follow or enforce the Code of Conduct in good faith may face temporary or permanent repercussions as determined by other members of the project’s leadership.\n\n\n\nThis Code of Conduct is adapted from the Contributor Covenant, version 1.4, available at https://www.contributor-covenant.org/version/1/4/code-of-conduct.html\nFor answers to common questions about this code of conduct, see https://www.contributor-covenant.org/faq"
+  },
+  {
+    "objectID": "personal_website-master/CODE_OF_CONDUCT.html#our-pledge",
+    "href": "personal_website-master/CODE_OF_CONDUCT.html#our-pledge",
+    "title": "Contributor Covenant Code of Conduct",
+    "section": "",
+    "text": "In the interest of fostering an open and welcoming environment, we as contributors and maintainers pledge to making participation in our project and our community a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, religion, or sexual identity and orientation."
+  },
+  {
+    "objectID": "personal_website-master/CODE_OF_CONDUCT.html#our-standards",
+    "href": "personal_website-master/CODE_OF_CONDUCT.html#our-standards",
+    "title": "Contributor Covenant Code of Conduct",
+    "section": "",
+    "text": "Examples of behavior that contributes to creating a positive environment include:\n\nUsing welcoming and inclusive language\nBeing respectful of differing viewpoints and experiences\nGracefully accepting constructive criticism\nFocusing on what is best for the community\nShowing empathy towards other community members\n\nExamples of unacceptable behavior by participants include:\n\nThe use of sexualized language or imagery and unwelcome sexual attention or advances\nTrolling, insulting/derogatory comments, and personal or political attacks\nPublic or private harassment\nPublishing others’ private information, such as a physical or electronic address, without explicit permission\nOther conduct which could reasonably be considered inappropriate in a professional setting"
+  },
+  {
+    "objectID": "personal_website-master/CODE_OF_CONDUCT.html#our-responsibilities",
+    "href": "personal_website-master/CODE_OF_CONDUCT.html#our-responsibilities",
+    "title": "Contributor Covenant Code of Conduct",
+    "section": "",
+    "text": "Project maintainers are responsible for clarifying the standards of acceptable behavior and are expected to take appropriate and fair corrective action in response to any instances of unacceptable behavior.\nProject maintainers have the right and responsibility to remove, edit, or reject comments, commits, code, wiki edits, issues, and other contributions that are not aligned to this Code of Conduct, or to ban temporarily or permanently any contributor for other behaviors that they deem inappropriate, threatening, offensive, or harmful."
+  },
+  {
+    "objectID": "personal_website-master/CODE_OF_CONDUCT.html#scope",
+    "href": "personal_website-master/CODE_OF_CONDUCT.html#scope",
+    "title": "Contributor Covenant Code of Conduct",
+    "section": "",
+    "text": "This Code of Conduct applies both within project spaces and in public spaces when an individual is representing the project or its community. Examples of representing a project or community include using an official project e-mail address, posting via an official social media account, or acting as an appointed representative at an online or offline event. Representation of a project may be further defined and clarified by project maintainers."
+  },
+  {
+    "objectID": "personal_website-master/CODE_OF_CONDUCT.html#enforcement",
+    "href": "personal_website-master/CODE_OF_CONDUCT.html#enforcement",
+    "title": "Contributor Covenant Code of Conduct",
+    "section": "",
+    "text": "Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by contacting the project team at vbhogayata@gmail.com. All complaints will be reviewed and investigated and will result in a response that is deemed necessary and appropriate to the circumstances. The project team is obligated to maintain confidentiality with regard to the reporter of an incident. Further details of specific enforcement policies may be posted separately.\nProject maintainers who do not follow or enforce the Code of Conduct in good faith may face temporary or permanent repercussions as determined by other members of the project’s leadership."
+  },
+  {
+    "objectID": "personal_website-master/CODE_OF_CONDUCT.html#attribution",
+    "href": "personal_website-master/CODE_OF_CONDUCT.html#attribution",
+    "title": "Contributor Covenant Code of Conduct",
+    "section": "",
+    "text": "This Code of Conduct is adapted from the Contributor Covenant, version 1.4, available at https://www.contributor-covenant.org/version/1/4/code-of-conduct.html\nFor answers to common questions about this code of conduct, see https://www.contributor-covenant.org/faq"
+  },
+  {
+    "objectID": "Geng_Jie-quarto_animations_restored.html#why-animation-matters",
+    "href": "Geng_Jie-quarto_animations_restored.html#why-animation-matters",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "Why animation matters",
+    "text": "Why animation matters\n\n\nWithout animation\n\nfeels static\nless visual interest\nlooks like plain notes\n\n\nWith animation\n\ndraws attention\nfeels modern\nmore polished\n\n\n\nEven very small motion can make a Quarto site feel more intentional and more professional."
+  },
+  {
+    "objectID": "Geng_Jie-quarto_animations_restored.html#three-easy-animation-ideas",
+    "href": "Geng_Jie-quarto_animations_restored.html#three-easy-animation-ideas",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "Three easy animation ideas",
+    "text": "Three easy animation ideas\n\n\n\n\nLevel 1\n\nFade-in entrance\nContent appears softly when the slide step is revealed.\n\nopacity + translateY + keyframes\n\n\n\n\n\nLevel 2\n\nHover lift\nA card slightly rises and gains shadow when the mouse moves over it.\n\ntransition + transform + box-shadow\n\n\n\n\n\nLevel 3\n\nButton micro-interaction\nSmall motion on buttons makes your page feel more interactive.\n\nClick me\n\n\n\n\nThese three are a good starting point because they are easy to build, easy to control, and already make a website look much more polished."
+  },
+  {
+    "objectID": "Geng_Jie-quarto_animations_restored.html#how-these-animations-actually-work",
+    "href": "Geng_Jie-quarto_animations_restored.html#how-these-animations-actually-work",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "How these animations actually work",
+    "text": "How these animations actually work\nThe basic logic\n\n1. Add a class to the element\nIn HTML, a class is just a label you attach to an element so CSS can style it.\nHTML: &lt;div class=\"hover-lift\"&gt;This card lifts on hover&lt;/div&gt;\nQuarto: ::: {.hover-lift} This card lifts on hover :::\nIn other words, Quarto’s ::: block often plays the same role as an HTML &lt;div&gt;.\n\n\n2. Define the style in CSS\nThen CSS tells that class what to do. A simplified example:\n.hover-lift { transition: transform 0.3s ease; }\n.hover-lift:hover { transform: translateY(-8px); }\n\n\n3. Trigger the animation\nFor entrance effects, RevealJS can reveal a fragment step by step. For hover effects, the trigger is simply :hover."
+  },
+  {
+    "objectID": "Geng_Jie-quarto_animations_restored.html#what-else-is-possible",
+    "href": "Geng_Jie-quarto_animations_restored.html#what-else-is-possible",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "What else is possible?",
+    "text": "What else is possible?\nThese are just examples, not the only options.\n\n\n&lt;div class=\"card-badge\"&gt;Fancy 01&lt;/div&gt;\n&lt;h3&gt;Glassmorphism cards&lt;/h3&gt;\n&lt;p&gt;Soft transparency, blur, layered shadows, and subtle floating motion.&lt;/p&gt;\n\n\n&lt;div class=\"card-badge\"&gt;Fancy 02&lt;/div&gt;\n&lt;h3&gt;Shimmer loading effect&lt;/h3&gt;\n&lt;p&gt;A moving light sweep adds energy to cards, sections, or callouts.&lt;/p&gt;\n\n\n&lt;div class=\"card-badge\"&gt;Fancy 03&lt;/div&gt;\n&lt;h3&gt;Glow borders&lt;/h3&gt;\n&lt;p&gt;Animated gradient borders create a more premium, high-tech feel.&lt;/p&gt;\n\n\n&lt;div class=\"card-badge\"&gt;Fancy 04&lt;/div&gt;\n&lt;h3&gt;Orbital highlight&lt;/h3&gt;\n&lt;p&gt;A blurred glow rotates around the card to create a dynamic spotlight effect.&lt;/p&gt;\n\n\n&lt;div class=\"card-badge\"&gt;Fancy 05&lt;/div&gt;\n&lt;h3&gt;Gradient text + animated underline&lt;/h3&gt;\n&lt;p&gt;Great for hero titles, featured sections, or portfolio headers.&lt;/p&gt;\n\n\n&lt;div class=\"card-badge\"&gt;Fancy 06&lt;/div&gt;\n&lt;h3&gt;Staggered entrance system&lt;/h3&gt;\n&lt;p&gt;Multiple items appear one after another for a more designed presentation flow.&lt;/p&gt;"
+  },
+  {
+    "objectID": "Geng_Jie-quarto_animations_restored.html#where-to-find-inspiration-resources",
+    "href": "Geng_Jie-quarto_animations_restored.html#where-to-find-inspiration-resources",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "Where to find inspiration & resources",
+    "text": "Where to find inspiration & resources\n\n\n\n\nInspiration\n\nDesign inspiration\nDribbble → animation + UI ideas\nAwwwards → high-end web interactions\nBehance → full project case studies\nPinterest → quick visual exploration\n\nSearch keywords: “UI animation”, “micro interaction”\n\n\n\n\n\nTools & Code\n\nAnimation resources\nCodePen → ready-to-use CSS demos\nGSAP → advanced animation library\nAnimate.css → simple plug-and-play effects\nUI libraries (Tailwind UI, Flowbite)\n\nCopy → tweak → integrate into Quarto\n\n\n\n\nGood animation design is rarely invented from scratch. Most of the time, you observe → copy → simplify → adapt.\n\nFinal tip\n\nThink like a designer, not just a coder\nDon’t add animation everywhere, use it in an appropriate way"
+  },
+  {
+    "objectID": "animations-presentation.html",
+    "href": "animations-presentation.html",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "",
+    "text": "feels static\nless visual interest\nlooks like plain notes\n\n\n\n\n\n\ndraws attention\nfeels modern\nmore polished\n\n\n\n\n\nEven very small motion can make a Quarto site feel more intentional and more professional."
+  },
+  {
+    "objectID": "animations-presentation.html#why-animation-matters",
+    "href": "animations-presentation.html#why-animation-matters",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "Why animation matters",
+    "text": "Why animation matters\n\n\nWithout animation\n\nfeels static\nless visual interest\nlooks like plain notes\n\n\nWith animation\n\ndraws attention\nfeels modern\nmore polished\n\n\n\nEven very small motion can make a Quarto site feel more intentional and more professional."
+  },
+  {
+    "objectID": "animations-presentation.html#three-easy-animation-ideas",
+    "href": "animations-presentation.html#three-easy-animation-ideas",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "Three easy animation ideas",
+    "text": "Three easy animation ideas\n\n\n\n\nLevel 1\n\nFade-in entrance\nContent appears softly when the slide step is revealed.\n\nopacity + translateY + keyframes\n\n\n\n\n\nLevel 2\n\nHover lift\nA card slightly rises and gains shadow when the mouse moves over it.\n\ntransition + transform + box-shadow\n\n\n\n\n\nLevel 3\n\nButton micro-interaction\nSmall motion on buttons makes your page feel more interactive.\n\nClick me\n\n\n\n\nThese three are a good starting point because they are easy to build, easy to control, and already make a website look much more polished."
+  },
+  {
+    "objectID": "animations-presentation.html#how-these-animations-actually-work",
+    "href": "animations-presentation.html#how-these-animations-actually-work",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "How these animations actually work",
+    "text": "How these animations actually work\nThe basic logic\n\n1. Add a class to the element\nIn HTML, a class is just a label you attach to an element so CSS can style it.\nHTML: &lt;div class=\"hover-lift\"&gt;This card lifts on hover&lt;/div&gt;\nQuarto: ::: {.hover-lift} This card lifts on hover :::\nIn other words, Quarto’s ::: block often plays the same role as an HTML div.\n\n\n2. Define the style in CSS\nThen CSS tells that class what to do. A simplified example:\n.hover-lift { transition: transform 0.3s ease; }\n.hover-lift:hover { transform: translateY(-8px); }\n\n\n3. Trigger the animation\nFor entrance effects, RevealJS can reveal a fragment step by step. For hover effects, the trigger is simply :hover.\n\n\n4. Use animation or transition\nanimation is good for entrance effects. transition is good for hover and button interactions."
+  },
+  {
+    "objectID": "animations-presentation.html#what-else-is-possible",
+    "href": "animations-presentation.html#what-else-is-possible",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "What else is possible?",
+    "text": "What else is possible?\nThese are just examples, not the only options.\n\n\n\nFancy 01\n\nGlassmorphism cards\nSoft transparency, blur, layered shadows, and subtle floating motion.\n\n\n\nFancy 02\n\nShimmer loading effect\nA moving light sweep adds energy to cards, sections, or callouts.\n\n\n\nFancy 03\n\nGlow borders\nAnimated gradient borders create a more premium, high-tech feel.\n\n\n\nFancy 04\n\nOrbital highlight\nA blurred glow rotates around the card to create a dynamic spotlight effect.\n\n\n\nFancy 05\n\nGradient text + animated underline\nGreat for hero titles, featured sections, or portfolio headers.\n\n\n\nFancy 06\n\nStaggered entrance system\nMultiple items appear one after another for a more designed presentation flow."
+  },
+  {
+    "objectID": "animations-presentation.html#takeaway",
+    "href": "animations-presentation.html#takeaway",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "Takeaway",
+    "text": "Takeaway\n\nStart with one entrance animation such as fade-in\nAdd one interaction pattern such as hover lift\nImprove buttons with micro-interactions\nUse fancier effects only where you want emphasis"
+  },
+  {
+    "objectID": "animations-presentation.html#where-to-find-inspiration",
+    "href": "animations-presentation.html#where-to-find-inspiration",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "Where to find inspiration",
+    "text": "Where to find inspiration\nIf you want to use animation to make a website look better, there are many good places to find ideas and examples.\n\n\n\nResource 01\n\nCodePen\nA huge collection of live animation demos. You can search for ideas like CSS animation, hover effects, cards, buttons, or page transitions.\n\n\n\nResource 02\n\nAwwwards\nA gallery of high-end website design. This is useful for design inspiration and for seeing how motion is used in real websites.\n\n\n\nResource 03\n\nDribbble\nA good place to find modern UI ideas, micro-interactions, and polished visual styles.\n\n\n\nResource 04\n\nGitHub and public Quarto examples\nYou can look at public Quarto websites and templates to borrow layout ideas, animation ideas, and CSS structure.\n\n\n\nResource 05\n\nChatGPT or other AI tools\nAI can help generate CSS and animation ideas quickly, but it is still important to read the code and understand it.\n\n\n\nResource 06\n\nCSS-Tricks\nA useful site for learning how CSS animations and transitions actually work.\n\n\n\nA good workflow is: find inspiration, simplify the idea, and adapt it to your own website style. You do not need very complex effects — even small motion can make a page feel more polished."
+  },
+  {
+    "objectID": "Geng_Jie-animation_slides.qmd.html#why-animation-matters",
+    "href": "Geng_Jie-animation_slides.qmd.html#why-animation-matters",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "Why animation matters",
+    "text": "Why animation matters\n\n\nWithout animation\n\nfeels static\nless visual interest\nlooks like plain notes\n\n\nWith animation\n\ndraws attention\nfeels modern\nmore polished\n\n\n\nEven very small motion can make a Quarto site feel more intentional and more professional."
+  },
+  {
+    "objectID": "Geng_Jie-animation_slides.qmd.html#three-easy-animation-ideas",
+    "href": "Geng_Jie-animation_slides.qmd.html#three-easy-animation-ideas",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "Three easy animation ideas",
+    "text": "Three easy animation ideas\n\n\n\n\nLevel 1\n\nFade-in entrance\nContent appears softly when the slide step is revealed.\n\nopacity + translateY + keyframes\n\n\n\n\n\nLevel 2\n\nHover lift\nA card slightly rises and gains shadow when the mouse moves over it.\n\ntransition + transform + box-shadow\n\n\n\n\n\nLevel 3\n\nButton micro-interaction\nSmall motion on buttons makes your page feel more interactive.\n\nClick me\n\n\n\n\nThese three are a good starting point because they are easy to build, easy to control, and already make a website look much more polished."
+  },
+  {
+    "objectID": "Geng_Jie-animation_slides.qmd.html#how-these-animations-actually-work",
+    "href": "Geng_Jie-animation_slides.qmd.html#how-these-animations-actually-work",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "How these animations actually work",
+    "text": "How these animations actually work\nThe basic logic\n\n1. Add a class to the element\nIn HTML, a class is just a label you attach to an element so CSS can style it.\nHTML: &lt;div class=\"hover-lift\"&gt;This card lifts on hover&lt;/div&gt;\nQuarto: ::: {.hover-lift} This card lifts on hover :::\nIn other words, Quarto’s ::: block often plays the same role as an HTML div.\n\n\n2. Define the style in CSS\nThen CSS tells that class what to do. A simplified example:\n.hover-lift { transition: transform 0.3s ease; }\n.hover-lift:hover { transform: translateY(-8px); }\n\n\n3. Trigger the animation\nFor entrance effects, RevealJS can reveal a fragment step by step. For hover effects, the trigger is simply :hover.\n\n\n4. Use animation or transition\nanimation is good for entrance effects. transition is good for hover and button interactions."
+  },
+  {
+    "objectID": "Geng_Jie-animation_slides.qmd.html#what-else-is-possible",
+    "href": "Geng_Jie-animation_slides.qmd.html#what-else-is-possible",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "What else is possible?",
+    "text": "What else is possible?\nThese are just examples, not the only options.\n\n\n\nFancy 01\n\nGlassmorphism cards\nSoft transparency, blur, layered shadows, and subtle floating motion.\n\n\n\nFancy 02\n\nShimmer loading effect\nA moving light sweep adds energy to cards, sections, or callouts.\n\n\n\nFancy 03\n\nGlow borders\nAnimated gradient borders create a more premium, high-tech feel.\n\n\n\nFancy 04\n\nOrbital highlight\nA blurred glow rotates around the card to create a dynamic spotlight effect.\n\n\n\nFancy 05\n\nGradient text + animated underline\nGreat for hero titles, featured sections, or portfolio headers.\n\n\n\nFancy 06\n\nStaggered entrance system\nMultiple items appear one after another for a more designed presentation flow."
+  },
+  {
+    "objectID": "Geng_Jie-animation_slides.qmd.html#takeaway",
+    "href": "Geng_Jie-animation_slides.qmd.html#takeaway",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "Takeaway",
+    "text": "Takeaway\n\nStart with one entrance animation such as fade-in\nAdd one interaction pattern such as hover lift\nImprove buttons with micro-interactions\nUse fancier effects only where you want emphasis"
+  },
+  {
+    "objectID": "Geng_Jie-animation_slides.qmd.html#where-to-find-inspiration",
+    "href": "Geng_Jie-animation_slides.qmd.html#where-to-find-inspiration",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "Where to find inspiration",
+    "text": "Where to find inspiration\nIf you want to use animation to make a website look better, there are many good places to find ideas and examples.\n\n\n\nResource 01\n\nCodePen\nA huge collection of live animation demos. You can search for ideas like CSS animation, hover effects, cards, buttons, or page transitions.\n\n\n\nResource 02\n\nAwwwards\nA gallery of high-end website design. This is useful for design inspiration and for seeing how motion is used in real websites.\n\n\n\nResource 03\n\nDribbble\nA good place to find modern UI ideas, micro-interactions, and polished visual styles.\n\n\n\nResource 04\n\nGitHub and public Quarto examples\nYou can look at public Quarto websites and templates to borrow layout ideas, animation ideas, and CSS structure.\n\n\n\nResource 05\n\nChatGPT or other AI tools\nAI can help generate CSS and animation ideas quickly, but it is still important to read the code and understand it.\n\n\n\nResource 06\n\nCSS-Tricks\nA useful site for learning how CSS animations and transitions actually work.\n\n\n\nA good workflow is: find inspiration, simplify the idea, and adapt it to your own website style. You do not need very complex effects — even small motion can make a page feel more polished."
+  },
+  {
+    "objectID": "Geng_Jie-animation_slides.html#why-animation-matters",
+    "href": "Geng_Jie-animation_slides.html#why-animation-matters",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "Why animation matters",
+    "text": "Why animation matters\n\n\nWithout animation\n\nfeels static\nless visual interest\nlooks like plain notes\n\n\nWith animation\n\ndraws attention\nfeels modern\nmore polished\n\n\n\nEven very small motion can make a Quarto site feel more intentional and more professional."
+  },
+  {
+    "objectID": "Geng_Jie-animation_slides.html#three-easy-animation-ideas",
+    "href": "Geng_Jie-animation_slides.html#three-easy-animation-ideas",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "Three easy animation ideas",
+    "text": "Three easy animation ideas\n\n\n\n\nLevel 1\n\nFade-in entrance\nContent appears softly when the slide step is revealed.\n\nopacity + translateY + keyframes\n\n\n\n\n\nLevel 2\n\nHover lift\nA card slightly rises and gains shadow when the mouse moves over it.\n\ntransition + transform + box-shadow\n\n\n\n\n\nLevel 3\n\nButton micro-interaction\nSmall motion on buttons makes your page feel more interactive.\n\nClick me\n\n\n\n\nThese three are a good starting point because they are easy to build, easy to control, and already make a website look much more polished."
+  },
+  {
+    "objectID": "Geng_Jie-animation_slides.html#how-these-animations-actually-work",
+    "href": "Geng_Jie-animation_slides.html#how-these-animations-actually-work",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "How these animations actually work",
+    "text": "How these animations actually work\nThe basic logic\n\n1. Add a class to the element\nIn HTML, a class is just a label you attach to an element so CSS can style it.\nHTML: &lt;div class=\"hover-lift\"&gt;This card lifts on hover&lt;/div&gt;\nQuarto: ::: {.hover-lift} This card lifts on hover :::\nIn other words, Quarto’s ::: block often plays the same role as an HTML div.\n\n\n2. Define the style in CSS\nThen CSS tells that class what to do. A simplified example:\n.hover-lift { transition: transform 0.3s ease; }\n.hover-lift:hover { transform: translateY(-8px); }\n\n\n3. Trigger the animation\nFor entrance effects, RevealJS can reveal a fragment step by step. For hover effects, the trigger is simply :hover.\n\n\n4. Use animation or transition\nanimation is good for entrance effects. transition is good for hover and button interactions."
+  },
+  {
+    "objectID": "Geng_Jie-animation_slides.html#what-else-is-possible",
+    "href": "Geng_Jie-animation_slides.html#what-else-is-possible",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "What else is possible?",
+    "text": "What else is possible?\nThese are just examples, not the only options.\n\n\n\nFancy 01\n\nGlassmorphism cards\nSoft transparency, blur, layered shadows, and subtle floating motion.\n\n\n\nFancy 02\n\nShimmer loading effect\nA moving light sweep adds energy to cards, sections, or callouts.\n\n\n\nFancy 03\n\nGlow borders\nAnimated gradient borders create a more premium, high-tech feel.\n\n\n\nFancy 04\n\nOrbital highlight\nA blurred glow rotates around the card to create a dynamic spotlight effect.\n\n\n\nFancy 05\n\nGradient text + animated underline\nGreat for hero titles, featured sections, or portfolio headers.\n\n\n\nFancy 06\n\nStaggered entrance system\nMultiple items appear one after another for a more designed presentation flow."
+  },
+  {
+    "objectID": "Geng_Jie-animation_slides.html#takeaway",
+    "href": "Geng_Jie-animation_slides.html#takeaway",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "Takeaway",
+    "text": "Takeaway\n\nStart with one entrance animation such as fade-in\nAdd one interaction pattern such as hover lift\nImprove buttons with micro-interactions\nUse fancier effects only where you want emphasis"
+  },
+  {
+    "objectID": "Geng_Jie-animation_slides.html#where-to-find-inspiration",
+    "href": "Geng_Jie-animation_slides.html#where-to-find-inspiration",
+    "title": "How to Add Simple Animations to Your Quarto Website",
+    "section": "Where to find inspiration",
+    "text": "Where to find inspiration\nIf you want to use animation to make a website look better, there are many good places to find ideas and examples.\n\n\n\nResource 01\n\nCodePen\nA huge collection of live animation demos. You can search for ideas like CSS animation, hover effects, cards, buttons, or page transitions.\n\n\n\nResource 02\n\nAwwwards\nA gallery of high-end website design. This is useful for design inspiration and for seeing how motion is used in real websites.\n\n\n\nResource 03\n\nDribbble\nA good place to find modern UI ideas, micro-interactions, and polished visual styles.\n\n\n\nResource 04\n\nGitHub and public Quarto examples\nYou can look at public Quarto websites and templates to borrow layout ideas, animation ideas, and CSS structure.\n\n\n\nResource 05\n\nChatGPT or other AI tools\nAI can help generate CSS and animation ideas quickly, but it is still important to read the code and understand it.\n\n\n\nResource 06\n\nCSS-Tricks\nA useful site for learning how CSS animations and transitions actually work.\n\n\n\nA good workflow is: find inspiration, simplify the idea, and adapt it to your own website style. You do not need very complex effects — even small motion can make a page feel more polished."
+  },
+  {
+    "objectID": "Personl_website.html",
+    "href": "Personl_website.html",
+    "title": "Jie Geng",
+    "section": "",
+    "text": "MS in Business Analytics, UC San Diego\nI am a graduate student in Business Analytics at UC San Diego with interests in data analysis, business strategy, and decision-making through data-driven insights. This website presents my academic background, selected projects, and coursework completed for MGTA 495.\n\n\n\n\n\n\nI am especially interested in applying analytics to solve real business problems in marketing, operations, and strategy."
+  },
+  {
+    "objectID": "Personl_website.html#welcome",
+    "href": "Personl_website.html#welcome",
+    "title": "Jie Geng",
+    "section": "",
+    "text": "MS in Business Analytics, UC San Diego\nI am a graduate student in Business Analytics at UC San Diego with interests in data analysis, business strategy, and decision-making through data-driven insights. This website presents my academic background, selected projects, and coursework completed for MGTA 495.\n\n\n\n\n\n\nI am especially interested in applying analytics to solve real business problems in marketing, operations, and strategy."
+  },
+  {
+    "objectID": "Personl_website.html#highlights",
+    "href": "Personl_website.html#highlights",
+    "title": "Jie Geng",
+    "section": "Highlights",
+    "text": "Highlights\n\n\n\nProjects\nI have worked on projects involving data analysis, business problem solving, and applied modeling. Visit the Projects page to see examples of my work.\n\n\n\nCoursework\nMy coursework at UC San Diego has strengthened my foundation in analytics, statistics, and business decision-making.\n\n\n\nCareer Interests\nI am interested in roles related to business analytics, strategy, consulting, and data-informed decision support."
+  },
+  {
+    "objectID": "Personl_website.html#quick-facts",
+    "href": "Personl_website.html#quick-facts",
+    "title": "Jie Geng",
+    "section": "Quick Facts",
+    "text": "Quick Facts\n\nProgram: MS in Business Analytics\nUniversity: UC San Diego\nFocus Areas: Data analytics, business insights, decision-making\nWebsite Purpose: Resume, projects, and MGTA 495 coursework"
+  },
+  {
+    "objectID": "Personl_website.html#explore-more",
+    "href": "Personl_website.html#explore-more",
+    "title": "Jie Geng",
+    "section": "Explore More",
+    "text": "Explore More\n\nView Resume View Projects Contact Me"
+  },
+  {
+    "objectID": "coursework.html",
+    "href": "coursework.html",
+    "title": "Coursework",
+    "section": "",
+    "text": "Through my graduate study, I aim to strengthen my ability to:\n\ntranslate business questions into analytical problems\ncommunicate insights clearly\nsupport decisions with data"
+  },
+  {
+    "objectID": "coursework.html#relevant-coursework",
+    "href": "coursework.html#relevant-coursework",
+    "title": "Coursework",
+    "section": "Relevant Coursework",
+    "text": "Relevant Coursework\n\nA/B Testing (MGTA 495)\nSimulation of A/B experiments, hypothesis testing, and statistical inference.\nKey Topics - Experimental design\n\nHypothesis testing\nBootstrap standard errors\nCentral Limit Theorem\nA/B test evaluation"
+  },
+  {
+    "objectID": "coursework.html#academic-interests",
+    "href": "coursework.html#academic-interests",
+    "title": "Coursework",
+    "section": "Academic Interests",
+    "text": "Academic Interests\nMy current interests include: - business intelligence, - strategic analysis, - customer and market insights, - and practical applications of analytics in organizations."
+  },
+  {
+    "objectID": "hw1_questions.html",
+    "href": "hw1_questions.html",
+    "title": "A/B Testing a Call to Action",
+    "section": "",
+    "text": "Note\n\n\n\nWrite a short introduction for the reader that sets the scene. Cover the following points in your own words:\n\nYou have a website and your landing page includes a place where visitors can sign up to receive your newsletter.\nYou want to test which of two possible “calls to action” (CTAs) leads to more sign-ups. CTA A reads “Sign up for our newsletter here!” and CTA B reads “Stay up to date by signing up!” (you are welcome to change the language of the CTAs).\nYou will evaluate which CTA performs better by running an A/B test. Explain what an A/B test is: visitors are randomly assigned to see one of the two CTAs, and you compare sign-up rates between the two groups."
+  },
+  {
+    "objectID": "hw1_questions.html#introduction",
+    "href": "hw1_questions.html#introduction",
+    "title": "A/B Testing a Call to Action",
+    "section": "",
+    "text": "Note\n\n\n\nWrite a short introduction for the reader that sets the scene. Cover the following points in your own words:\n\nYou have a website and your landing page includes a place where visitors can sign up to receive your newsletter.\nYou want to test which of two possible “calls to action” (CTAs) leads to more sign-ups. CTA A reads “Sign up for our newsletter here!” and CTA B reads “Stay up to date by signing up!” (you are welcome to change the language of the CTAs).\nYou will evaluate which CTA performs better by running an A/B test. Explain what an A/B test is: visitors are randomly assigned to see one of the two CTAs, and you compare sign-up rates between the two groups."
+  },
+  {
+    "objectID": "hw1_questions.html#the-ab-test-as-a-statistical-problem",
+    "href": "hw1_questions.html#the-ab-test-as-a-statistical-problem",
+    "title": "A/B Testing a Call to Action",
+    "section": "The A/B Test as a Statistical Problem",
+    "text": "The A/B Test as a Statistical Problem\n\n\n\n\n\n\nNote\n\n\n\nIn this section, connect the A/B test to a formal statistical framework. Address each of the following ideas:\n\nEach visitor either signs up or does not, so we can model each visitor’s outcome as a draw from a Bernoulli distribution with parameter \\(\\pi\\), the probability of signing up.\nBecause the CTA a visitor sees may influence their probability of signing up, we allow the parameter to differ across groups: visitors who see CTA A have sign-up probability \\(\\pi_A\\), and visitors who see CTA B have sign-up probability \\(\\pi_B\\). Each visitor can either sign up (1) or not (0).\nThe quantity we care about is \\(\\theta = \\pi_A - \\pi_B\\), the difference in sign-up rates between the two CTAs.\nOur estimator of \\(\\theta\\) is the difference in sample means, \\(\\hat\\theta = \\bar{X}_A - \\bar{X}_B\\). (Since each observation is either 0 or 1, the sample mean is simply the proportion of visitors who signed up — so \\(\\bar{X}_A = \\hat\\pi_A\\) and \\(\\bar{X}_B = \\hat\\pi_B\\).)"
+  },
+  {
+    "objectID": "hw1_questions.html#simulating-data",
+    "href": "hw1_questions.html#simulating-data",
+    "title": "A/B Testing a Call to Action",
+    "section": "Simulating Data",
+    "text": "Simulating Data\n\n\n\n\n\n\nNote\n\n\n\n\nWrite a brief paragraph for the reader explaining that in the real world we would not know the true values of \\(\\pi_A\\) and \\(\\pi_B\\), but for the purpose of this exercise we will set them ourselves so that we can study the behavior of our estimator when we know the truth.\nSuppose \\(\\pi_A = 0.22\\) and \\(\\pi_B = 0.18\\), so the true difference is \\(\\theta = 0.04\\).\nUsing a language of your choice, simulate 1,000 draws from each of the two Bernoulli distributions (2,000 total). Store the results so you can use them in the sections that follow."
+  },
+  {
+    "objectID": "hw1_questions.html#the-law-of-large-numbers",
+    "href": "hw1_questions.html#the-law-of-large-numbers",
+    "title": "A/B Testing a Call to Action",
+    "section": "The Law of Large Numbers",
+    "text": "The Law of Large Numbers\n\n\n\n\n\n\nNote\n\n\n\n\nWrite an introductory sentence or two explaining the Law of Large Numbers to the reader: as the sample size grows, the sample mean converges to the population mean. Connect this back to our estimator — the LLN is what gives us confidence that \\(\\hat\\theta = \\bar{X}_A - \\bar{X}_B\\) will be close to the true \\(\\theta\\) when our sample is large enough.\nThen demonstrate this visually. Using the simulated data from the previous section, compute the element-wise differences between the CTA A draws and the CTA B draws to get a vector of 1,000 differences. Calculate the cumulative average of that vector (i.e., the running mean after 1 draw, after 2 draws, …, after 1,000 draws) and plot it against the number of observations.\nThe plot should show a noisy average when only a few observations are included that settles down and converges toward the true difference of 0.04 as the sample size grows.\nAfter the plot, write a few sentences explaining what the reader should take away from it."
+  },
+  {
+    "objectID": "hw1_questions.html#bootstrap-standard-errors",
+    "href": "hw1_questions.html#bootstrap-standard-errors",
+    "title": "A/B Testing a Call to Action",
+    "section": "Bootstrap Standard Errors",
+    "text": "Bootstrap Standard Errors\n\n\n\n\n\n\nNote\n\n\n\n\nNow that we “trust” our estimator, the next natural question is: how precise is it? We would like to report not just a point estimate of \\(\\theta\\) but also a confidence interval that communicates our uncertainty.\nWrite a short introduction explaining the idea of bootstrapping to the reader. The bootstrap is a resampling method that lets us estimate the variability of a statistic without relying on a closed-form formula. We resample (with replacement) from our observed data many times, compute the statistic of interest on each resample, and use the standard deviation of those resampled statistics as our estimate of the standard error.\nThen carry out the following steps:\n\nFrom your 1,000 CTA A draws and 1,000 CTA B draws, draw a bootstrap resample of size 1,000 (with replacement) from each group. Compute \\(\\hat\\theta^* = \\bar{X}_A^* - \\bar{X}_B^*\\) for that resample.\nRepeat step 1 a total of 1,000 times to produce a vector of 1,000 bootstrapped estimates of \\(\\theta\\).\nCompute the standard deviation of those 1,000 values. This is your bootstrapped standard error.\nCompare it to the analytical standard error. For the difference in means of two independent Bernoulli samples, the standard error formula is:\n\n\n\\[\nSE(\\hat\\theta) = \\sqrt{\\frac{\\hat\\pi_A(1 - \\hat\\pi_A)}{n_A} + \\frac{\\hat\\pi_B(1 - \\hat\\pi_B)}{n_B}}\n\\]\nwhere \\(\\hat\\pi_A\\) and \\(\\hat\\pi_B\\) are the sample proportions and \\(n_A\\) and \\(n_B\\) are the sample sizes.\n\nReport both the bootstrapped standard error and the analytical standard error and comment on how close they are to each other. Then use the bootstrapped standard error to construct a 95% confidence interval for \\(\\theta\\) and interpret it for the reader."
+  },
+  {
+    "objectID": "hw1_questions.html#the-central-limit-theorem",
+    "href": "hw1_questions.html#the-central-limit-theorem",
+    "title": "A/B Testing a Call to Action",
+    "section": "The Central Limit Theorem",
+    "text": "The Central Limit Theorem\n\n\n\n\n\n\nNote\n\n\n\n\nWrite a short introduction explaining the Central Limit Theorem to the reader: regardless of the shape of the underlying population distribution, the sampling distribution of the sample mean (and therefore of the difference in sample means) becomes approximately Normal as the sample size grows.\nThen demonstrate this visually by creating four histograms, one for each of the following sample sizes: \\(n \\in \\{25, 50, 100, 500\\}\\).\nFor each sample size \\(n\\):\n\nDraw \\(n\\) observations from the CTA A distribution and \\(n\\) observations from the CTA B distribution.\nCompute \\(\\hat\\theta = \\bar{X}_A - \\bar{X}_B\\).\nRepeat steps 1–2 a total of 1,000 times to produce 1,000 values of \\(\\hat\\theta\\).\nPlot a histogram of those 1,000 values.\n\nArrange the four histograms so they can be compared easily (e.g., in a 2x2 grid with consistent x-axis scales).\nAfter the plots, write a few sentences explaining what the reader should observe: at small sample sizes the histogram may look rough or asymmetric, but as \\(n\\) increases the distribution of \\(\\hat\\theta\\) becomes smoother and more bell-shaped, illustrating the Central Limit Theorem in action."
+  },
+  {
+    "objectID": "hw1_questions.html#hypothesis-testing",
+    "href": "hw1_questions.html#hypothesis-testing",
+    "title": "A/B Testing a Call to Action",
+    "section": "Hypothesis Testing",
+    "text": "Hypothesis Testing\n\n\n\n\n\n\nNote\n\n\n\n\nNow that we have seen the CLT in action — that the sampling distribution of \\(\\hat\\theta\\) is approximately Normal for large samples — we can use this result to perform a formal hypothesis test.\nWrite a paragraph explaining what a hypothesis test is to the reader. We set up a null hypothesis \\(H_0: \\theta = 0\\) (i.e., the two CTAs produce the same sign-up rate) and an alternative hypothesis \\(H_1: \\theta \\neq 0\\). The goal is to assess whether the data provide enough evidence to reject \\(H_0\\).\nThen explain why we standardize \\(\\hat\\theta\\) to form a test statistic. We compute:\n\n\\[\nz = \\frac{\\hat\\theta - 0}{SE(\\hat\\theta)}\n\\]\n\nWalk the reader through the logic of this standardization step by step:\n\nBy the CLT, we know that \\(\\hat\\theta\\) is approximately Normal for large samples. Under \\(H_0\\), the mean of that distribution is 0.\nWhen we divide a Normal random variable by its standard deviation, we get a standard Normal \\(N(0,1)\\). So under \\(H_0\\), \\(z \\;\\dot\\sim\\; N(0,1)\\).\nThis means we know the distribution of our test statistic under the null, which is exactly what we need to compute a p-value.\n\nExplain to the reader why this is sometimes called a “t-test” even though the test statistic follows an approximate Normal distribution, not a t-distribution. The classical t-test arises when the data are drawn from a Normal distribution and the variance must be estimated — the ratio then follows an exact t-distribution. In our setting the data are Bernoulli (not Normal), so there is no exact t-distribution result. The CLT gives us approximate Normality, and since we estimate the SE from the data, what we are really doing is closer to a z-test. In practice, for large samples the t-distribution and the standard Normal are nearly identical, so the distinction has little practical consequence — but it is important to understand why.\nUsing your simulated data, compute the test statistic and its associated p-value (using the standard Normal distribution as the reference). Interpret the result for the reader."
+  },
+  {
+    "objectID": "hw1_questions.html#the-t-test-as-a-regression",
+    "href": "hw1_questions.html#the-t-test-as-a-regression",
+    "title": "A/B Testing a Call to Action",
+    "section": "The T-Test as a Regression",
+    "text": "The T-Test as a Regression\n\n\n\n\n\n\nNote\n\n\n\n\nIt turns out that the two-sample test we just ran is mathematically equivalent to a simple linear regression. Understanding this connection is useful because it means the same machinery — and the same software — that you use for regression can also perform hypothesis tests, and it generalizes naturally to more complex experimental designs.\nExplain the setup to the reader. Stack the CTA A and CTA B data into a single dataset with two columns: an outcome \\(Y_i\\) (1 if the visitor signed up, 0 otherwise) and an indicator \\(D_i\\) (1 if the visitor saw CTA A, 0 if they saw CTA B). Then fit the regression:\n\n\\[\nY_i = \\beta_0 + \\beta_1 D_i + \\varepsilon_i\n\\]\n\nWalk through the interpretation of the coefficients:\n\n\\(\\beta_0\\) is the expected value of \\(Y_i\\) when \\(D_i = 0\\) — i.e., the mean of the B group, which estimates \\(\\pi_B\\).\n\\(\\beta_0 + \\beta_1\\) is the expected value of \\(Y_i\\) when \\(D_i = 1\\) — i.e., the mean of the A group, which estimates \\(\\pi_A\\).\nTherefore \\(\\beta_1 = \\pi_A - \\pi_B = \\theta\\), and the OLS estimate \\(\\hat\\beta_1\\) is numerically identical to \\(\\hat\\theta = \\bar{X}_A - \\bar{X}_B\\).\n\nFit this regression using your simulated data. Report the coefficient estimate \\(\\hat\\beta_1\\), its standard error, its t-statistic, and its p-value. Compare these to the values you computed in the previous section using the two-sample approach — they should match (up to a small difference in how the standard error is computed; standard OLS assumes a single pooled variance, while the two-sample formula we used assumes separate variances for each group).\nExplain to the reader why this equivalence matters: the regression framework makes it easy to add controls, interactions, or additional treatment arms, all while producing the same inference in the simple case."
+  },
+  {
+    "objectID": "hw1_questions.html#the-problem-with-peeking",
+    "href": "hw1_questions.html#the-problem-with-peeking",
+    "title": "A/B Testing a Call to Action",
+    "section": "The Problem with Peeking",
+    "text": "The Problem with Peeking\n\n\n\n\n\n\nNote\n\n\n\n\nYour boss is impatient. Rather than waiting until all 1,000 visitors have been assigned to each group, she wants to run the hypothesis test after every 100 visitors per group — peeking at the results after 100, 200, 300, …, up to 1,000 visitors per group (10 tests in total). If any of those tests comes back significant at the \\(\\alpha = 0.05\\) level, she wants to declare a winner and stop the experiment early.\nExplain to the reader why this is problematic under classical frequentist statistics. The key issue is that a single test at \\(\\alpha = 0.05\\) has a 5% chance of a false positive (rejecting \\(H_0\\) when it is actually true). But when you conduct multiple tests on accumulating data, each peek is another opportunity to get a false positive. The overall probability of at least one false rejection across all the peeks is much higher than 5%.\nDemonstrate this with a simulation. The idea is as follows:\n\nSet up a world where the null hypothesis is true: \\(\\pi_A = \\pi_B = 0.20\\) (i.e., \\(\\theta = 0\\), there is no difference between the CTAs).\nSimulate a single experiment: draw 1,000 observations for group A and 1,000 for group B. After every 100 observations per group (at \\(n = 100, 200, \\ldots, 1000\\)), compute the z-statistic and p-value. Record whether any of the 10 p-values falls below 0.05.\nRepeat step 2 a total of 10,000 times to simulate 10,000 experiments.\nCompute the fraction of those 10,000 experiments in which at least one peek produced a significant result. This is the empirical false positive rate under peeking.\n\nCompare this to the nominal 5% false positive rate of a single test. Report the result and explain to the reader why peeking inflates the Type I error rate and what this means in practice for running A/B tests."
+  },
+  {
+    "objectID": "AB_Testing.html",
+    "href": "AB_Testing.html",
+    "title": "A/B Testing a Call to Action",
+    "section": "",
+    "text": "A landing page usually asks for only a tiny action from a visitor: one click, one email address, one moment of attention. Yet small wording changes can make that request feel either inviting or easy to ignore. That is exactly why call-to-action copy is such a natural setting for A/B testing.\nImagine a homepage with a newsletter signup box. One version of the page uses the line CTA A: “Sign up for our newsletter here!” A second version uses CTA B: “Stay up to date by signing up!” The business question is simple: which message leads to more subscriptions?\nAn A/B test answers that question by splitting incoming traffic at random. Some visitors see version A and others see version B. Once enough people have passed through the page, the two sign-up rates can be compared. Behind that very practical workflow sits a deeper statistical story about estimation, uncertainty, sampling variation, and false positives. The goal of this post is to use one simple experiment to walk through those core ideas in classical frequentist inference."
+  },
+  {
+    "objectID": "AB_Testing.html#introduction",
+    "href": "AB_Testing.html#introduction",
+    "title": "A/B Testing a Call to Action",
+    "section": "",
+    "text": "A landing page usually asks for only a tiny action from a visitor: one click, one email address, one moment of attention. Yet small wording changes can make that request feel either inviting or easy to ignore. That is exactly why call-to-action copy is such a natural setting for A/B testing.\nImagine a homepage with a newsletter signup box. One version of the page uses the line CTA A: “Sign up for our newsletter here!” A second version uses CTA B: “Stay up to date by signing up!” The business question is simple: which message leads to more subscriptions?\nAn A/B test answers that question by splitting incoming traffic at random. Some visitors see version A and others see version B. Once enough people have passed through the page, the two sign-up rates can be compared. Behind that very practical workflow sits a deeper statistical story about estimation, uncertainty, sampling variation, and false positives. The goal of this post is to use one simple experiment to walk through those core ideas in classical frequentist inference."
+  },
+  {
+    "objectID": "AB_Testing.html#the-ab-test-as-a-statistical-problem",
+    "href": "AB_Testing.html#the-ab-test-as-a-statistical-problem",
+    "title": "A/B Testing a Call to Action",
+    "section": "The A/B Test as a Statistical Problem",
+    "text": "The A/B Test as a Statistical Problem\nAt the individual level, each visitor generates a binary outcome: they either subscribe or they do not. That makes the Bernoulli model a natural starting point. If \\(\\pi\\) denotes the probability that a visitor signs up, then each observation is a draw from a Bernoulli distribution with parameter \\(\\pi\\).\nThe key complication is that the probability of signing up may depend on which CTA the visitor sees. Let \\(\\pi_A\\) denote the sign-up probability under CTA A and let \\(\\pi_B\\) denote the sign-up probability under CTA B. The quantity of real interest is not either probability by itself, but their difference:\n\\[\n\\theta = \\pi_A - \\pi_B\n\\]\nIf \\(\\theta\\) is positive, CTA A performs better. If it is negative, CTA B performs better. If it is zero, the two messages are equally effective.\nIn practice, the true value of \\(\\theta\\) is unknown and must be estimated from data. A natural estimator is the difference in sample means:\n\\[\n\\hat{\\theta} = \\bar{X}_A - \\bar{X}_B\n\\]\nBecause each outcome is either 0 or 1, the sample mean in each group is just the observed sign-up rate. So \\(\\bar{X}_A = \\hat{\\pi}_A\\) and \\(\\bar{X}_B = \\hat{\\pi}_B\\). In other words, the estimator here is nothing more exotic than the observed difference in conversion rates across the two page variants."
+  },
+  {
+    "objectID": "AB_Testing.html#simulating-data",
+    "href": "AB_Testing.html#simulating-data",
+    "title": "A/B Testing a Call to Action",
+    "section": "Simulating Data",
+    "text": "Simulating Data\nIn a real experiment, the truth sits behind the data and is never directly visible. Simulation turns that relationship around: the truth is specified first, and the observed data are generated from it. That makes simulation a useful way to study how a statistical method behaves when the answer is already known.\nFor the rest of this post, suppose CTA A has a true sign-up probability of \\(0.22\\) and CTA B has a true sign-up probability of \\(0.18\\). Under those assumptions, the true treatment effect is\n\\[\n\\theta = 0.22 - 0.18 = 0.04\n\\]\nSo the “better” CTA improves sign-up rates by four percentage points. The analysis below begins by simulating 1,000 visitors for each group, creating a synthetic experiment with 2,000 total observations.\n\n\n\n\n\n\n\n\nSimulated A/B Test Data\n\n\n1,000 visitors per CTA\n\n\nGroup\nTrue sign-up probability\nSimulated sample proportion\nSample size\n\n\n\n\nCTA A\n22.0%\n21.1%\n1000\n\n\nCTA B\n18.0%\n17.2%\n1000\n\n\n\n\n\n\n\nAs expected, the simulated sample proportions are close to the truth but not identical to it. That small gap is not a mistake; it is the whole point. Even when the underlying probabilities are fixed, random samples still wobble."
+  },
+  {
+    "objectID": "AB_Testing.html#the-law-of-large-numbers",
+    "href": "AB_Testing.html#the-law-of-large-numbers",
+    "title": "A/B Testing a Call to Action",
+    "section": "The Law of Large Numbers",
+    "text": "The Law of Large Numbers\nOne reason analysts trust sample averages at all is the Law of Large Numbers. Informally, it says that averages become more stable as more observations accumulate. In the A/B setting, that idea explains why the difference in observed sign-up rates eventually becomes a reliable guide to the true treatment effect.\nTo make that visible, the two simulated outcome vectors can be differenced observation by observation, and the running average of those differences can be tracked as the sample grows from 1 pair to 1,000 pairs.\n\n\n\n\n\n\n\n\n\nThe beginning of the curve is chaotic. With only a handful of observations, one extra signup or one extra non-signup can move the average sharply. But that instability fades as the sample grows. The curve does not become perfectly flat, yet it clearly settles toward the true effect. This is the first major lesson of the post: large samples do not eliminate randomness, but they do discipline it."
+  },
+  {
+    "objectID": "AB_Testing.html#bootstrap-standard-errors",
+    "href": "AB_Testing.html#bootstrap-standard-errors",
+    "title": "A/B Testing a Call to Action",
+    "section": "Bootstrap Standard Errors",
+    "text": "Bootstrap Standard Errors\nA point estimate answers only one question: what effect seems most plausible given the observed data? It does not answer the equally important question of how noisy that estimate is. Two experiments may produce the same estimated treatment effect but differ dramatically in how uncertain that estimate should feel.\nThe bootstrap offers a practical way to measure that uncertainty. Rather than relying entirely on a closed-form formula, the bootstrap repeatedly resamples from the observed data, computes the statistic of interest in each resample, and then uses the spread of those resampled statistics as an estimate of the standard error.\n\n\n\n\n\n\n\n\nBootstrap Results\n\n\nUncertainty around the treatment effect\n\n\nStatistic\nValue\n\n\n\n\nEstimated treatment effect\n3.90%\n\n\nBootstrap standard error\n1.71%\n\n\nAnalytical standard error\n1.76%\n\n\n95% CI lower bound\n0.55%\n\n\n95% CI upper bound\n7.25%\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTwo things stand out here. First, the bootstrap standard error and the analytical standard error are very close, which is a reassuring sign that the uncertainty estimate is not an artifact of one particular method. Second, the resulting 95% confidence interval excludes zero. In plain language, the observed data are not just consistent with CTA A being better; they are inconsistent with the idea that the two messages perform equally well."
+  },
+  {
+    "objectID": "AB_Testing.html#the-central-limit-theorem",
+    "href": "AB_Testing.html#the-central-limit-theorem",
+    "title": "A/B Testing a Call to Action",
+    "section": "The Central Limit Theorem",
+    "text": "The Central Limit Theorem\nThe next step is to move from one experiment to the behavior of the estimator across many hypothetical repetitions of the experiment. This is where the Central Limit Theorem becomes useful. Even when the underlying data are Bernoulli rather than Normally distributed, the sampling distribution of a sample mean becomes approximately Normal as the sample size grows. Because \\(\\hat{\\theta}\\) is built from sample means, the same logic applies to it as well.\nTo show that visually, the simulation below repeats the entire A/B test 1,000 times for each of four sample sizes: \\(n \\in \\{25, 50, 100, 500\\}\\).\n\n\n\n\n\n\n\n\n\nThe smaller-sample histograms are rough and uneven, which makes sense: with limited data, there is still a lot of discreteness and noise in the estimator. But as the sample size increases, the histograms become smoother, tighter, and more bell-shaped. That is the CLT at work. It is also the bridge from descriptive simulation to formal inference, because approximate Normality is what makes z-based testing possible in large samples."
+  },
+  {
+    "objectID": "AB_Testing.html#hypothesis-testing",
+    "href": "AB_Testing.html#hypothesis-testing",
+    "title": "A/B Testing a Call to Action",
+    "section": "Hypothesis Testing",
+    "text": "Hypothesis Testing\nAt this point the analysis has everything needed for a formal test. The business question becomes a statistical one: could an observed difference of this size reasonably have appeared if the two CTAs were actually identical?\nThe null and alternative hypotheses are\n\\[\nH_0: \\theta = 0\n\\]\nand\n\\[\nH_1: \\theta \\neq 0\n\\]\nrespectively.\nThe observed estimate is converted into a test statistic by scaling it relative to its own uncertainty:\n\\[\nz = \\frac{\\hat{\\theta} - 0}{SE(\\hat{\\theta})}\n\\]\nThat standardization matters. Under the CLT, \\(\\hat{\\theta}\\) is approximately Normal in large samples, and under the null its mean is zero. Once divided by its standard error, the statistic is approximately distributed as \\(N(0,1)\\). That reference distribution is what makes a p-value possible.\nStrictly speaking, this setup is closer to a large-sample z-test than to a classical t-test. The exact t framework belongs to Normal data with estimated variance. Here the data are Bernoulli, so the Normal approximation comes from asymptotics rather than an exact finite-sample theorem. In a sample this large, the distinction is practically minor, but conceptually it is worth keeping straight.\n\n\n\n\n\n\n\n\nHypothesis Test for the Difference in Sign-up Rates\n\n\nLarge-sample z-based inference\n\n\nQuantity\nValue\n\n\n\n\nEstimated effect\n3.90%\n\n\nStandard error\n1.76%\n\n\nz-statistic\n2.22\n\n\nTwo-sided p-value\n0.0265\n\n\n\n\n\n\n\nThe p-value is small enough to reject the null at conventional significance levels. In practical terms, the observed gap between the two CTAs is too large to dismiss as ordinary sampling noise. The data point toward a real performance difference."
+  },
+  {
+    "objectID": "AB_Testing.html#the-t-test-as-a-regression",
+    "href": "AB_Testing.html#the-t-test-as-a-regression",
+    "title": "A/B Testing a Call to Action",
+    "section": "The T-Test as a Regression",
+    "text": "The T-Test as a Regression\nOne of the most elegant parts of this example is that the two-sample test can be rewritten as a regression with almost no extra machinery. That matters because regression is the language most empirical work eventually speaks.\nStack the two groups into one dataset. Let \\(Y_i\\) equal 1 if visitor \\(i\\) signs up and 0 otherwise, and let \\(D_i\\) equal 1 if that visitor saw CTA A and 0 if they saw CTA B. Then estimate\n\\[\nY_i = \\beta_0 + \\beta_1 D_i + \\varepsilon_i\n\\]\nIn this model, \\(\\beta_0\\) is the mean outcome for the B group, so it estimates \\(\\pi_B\\). The sum \\(\\beta_0 + \\beta_1\\) is the mean outcome for the A group, so it estimates \\(\\pi_A\\). That means \\(\\beta_1\\) itself is exactly the treatment effect:\n\\[\n\\beta_1 = \\pi_A - \\pi_B = \\theta\n\\]\nSo the regression coefficient on the treatment indicator should match the earlier difference-in-means estimate.\n\n\n\n\n\n\n\n\nTwo-Sample Test and Regression Comparison\n\n\nSame estimate, nearly identical inference\n\n\nMethod\nEstimate\nStd. Error\nStatistic\np-value\n\n\n\n\nTwo-sample approach\n3.90%\n1.76%\n2.22\n0.0265\n\n\nRegression approach\n3.90%\n1.76%\n2.22\n0.0267\n\n\n\n\n\n\n\nThe numbers line up almost perfectly. That is not a coincidence; it is the same comparison written in two dialects. The practical value of the regression version is that it scales gracefully. Once the problem is in regression form, adding covariates, interactions, or multiple treatments becomes straightforward."
+  },
+  {
+    "objectID": "AB_Testing.html#the-problem-with-peeking",
+    "href": "AB_Testing.html#the-problem-with-peeking",
+    "title": "A/B Testing a Call to Action",
+    "section": "The Problem with Peeking",
+    "text": "The Problem with Peeking\nSo far, the story has assumed a well-behaved experiment: run the test, collect the planned sample, analyze once. Real organizations are rarely that patient. A manager may want to peek at results every few hours and stop the test the moment one variant looks significant.\nThat instinct is understandable but statistically dangerous. A single test at the 5% significance level has a 5% chance of generating a false positive when the null is true. Repeating the test over and over on accumulating data creates multiple chances to get lucky noise. The overall false-positive rate can climb far above 5%.\nTo see how large that distortion can be, the simulation below creates a world where there is no true difference at all: \\(\\pi_A = \\pi_B = 0.20\\). Each experiment is checked after every 100 observations per group, up to 1,000 observations per group, and the process records whether any interim look crosses the 0.05 threshold.\n\n\n\n\n\n\n\n\nPeeking Inflates Type I Error\n\n\nSequential looks create extra false-positive opportunities\n\n\nScenario\nFalse positive rate\n\n\n\n\nSingle test at alpha = 0.05\n5.0%\n\n\nPeeking every 100 visitors per group\n19.3%\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nThe result is sobering. A process that feels like “just checking in” can nearly quadruple the false-positive rate. For A/B testing in practice, that means patience is not merely a managerial virtue; it is part of valid inference. If early stopping is going to be allowed, it needs a method designed for sequential testing rather than ordinary repeated p-values."
+  },
+  {
+    "objectID": "index.html#welcome",
+    "href": "index.html#welcome",
+    "title": "Jie Geng",
+    "section": "",
+    "text": "MS in Business Analytics, UC San Diego\nI am a graduate student in Business Analytics at UC San Diego with interests in data analysis, business strategy, and decision-making through data-driven insights. This website presents my academic background, selected projects, and coursework completed for MGTA 495.\n\n\n\n\n\n\nI am especially interested in applying analytics to solve real business problems in marketing, operations, and strategy."
+  },
+  {
+    "objectID": "index.html#highlights",
+    "href": "index.html#highlights",
+    "title": "Jie Geng",
+    "section": "Highlights",
+    "text": "Highlights\n\n\n\nProjects\nI have worked on projects involving data analysis, business problem solving, and applied modeling. Visit the Projects page to see examples of my work.\n\n\n\nCoursework\nMy coursework at UC San Diego has strengthened my foundation in analytics, statistics, and business decision-making."
+  },
+  {
+    "objectID": "index.html#quick-facts",
+    "href": "index.html#quick-facts",
+    "title": "Jie Geng",
+    "section": "Quick Facts",
+    "text": "Quick Facts\nProgram: MS in Business Analytics\nUniversity: UC San Diego\nFocus Areas: Data analytics, business insights, decision-making\nWebsite Purpose: Resume, projects, and MGTA 495 coursework"
+  },
+  {
+    "objectID": "index.html#explore-more",
+    "href": "index.html#explore-more",
+    "title": "Jie Geng",
+    "section": "Explore More",
+    "text": "Explore More\n\nView Resume View Projects Contact Me"
+  },
+  {
+    "objectID": "resume.html",
+    "href": "resume.html",
+    "title": "Resume",
+    "section": "",
+    "text": "MS in Business Analytics, UC San Diego\n\n\njigeng@ucsd.edu | LinkedIn |"
+  },
+  {
+    "objectID": "resume.html#summary",
+    "href": "resume.html#summary",
+    "title": "Resume",
+    "section": "Summary",
+    "text": "Summary\nGraduate student in Business Analytics at UC San Diego with experience in data analysis, business research, machine learning, and decision support. Interested in roles in business analytics, strategy, consulting, and data-driven problem solving."
+  },
+  {
+    "objectID": "resume.html#education",
+    "href": "resume.html#education",
+    "title": "Resume",
+    "section": "Education",
+    "text": "Education\n\nUniversity of California, San Diego (UCSD)\nMaster of Science in Business Analytics La Jolla, USA | Expected Jun 2026 - Current GPA: 3.63 / 4.0\n\n\nHuaqiao University (HQU)\nBachelor of Management in International Business Quanzhou, China | Jun 2025 - GPA: 3.96 / 4.0 - Rank: 1 / 30 - Dissertation: Predicting E-commerce User Session Revenue Based on Machine Learning Models"
+  },
+  {
+    "objectID": "resume.html#experience",
+    "href": "resume.html#experience",
+    "title": "Resume",
+    "section": "Experience",
+    "text": "Experience\n\nVikk AI\nConsultant San Diego, USA | Mar 2026 – Jun 2026 (Expected) - Developed an analytics framework for an AI-powered legal information platform using 80,000+ anonymized conversations. - Built predictive models to estimate conversion likelihood and economic value of legal conversations. - Produced recommendations for prioritization, escalation timing, and conversation flow optimization.\n\n\nZhengzhou Commodity Exchange Futures & Derivatives Institute\nData Science Assistant Zhengzhou, China | Aug 2024 – Oct 2024 - Collected, cleaned, and processed large-scale historical market and trading data for research use. - Conducted exploratory data analysis and visualization of price trends, volatility, and variable relationships. - Supported financial market behavior research through data preparation and case analysis.\n\n\nCapgemini\nBusiness Analysis Assistant Shanghai, China | Feb 2024 – May 2024 - Supported a strategic marketing project for a senior care client through interviews and questionnaire design. - Managed survey collection and screening, producing 220+ valid responses. - Used SPSS for reliability tests, descriptive statistics, and t-tests to identify user demand differences.\n\n\nPostal Savings Bank of China\nFinancial Assistant Qinyang, China | Jul 2023 – Sep 2023 - Assisted with credit risk assessment through DTI calculations and client financial data review. - Cleaned and analyzed credit data using Pandas to support default risk modeling.\n\n\nZhengzhou Dennis Department Store Co., Ltd.\nData Analyst Jiaozuo, China | Jun 2022 – Sep 2022 - Automated financial and sales reports using Excel PivotTables and VBA. - Queried and analyzed sales data with SQL to support inventory and merchandising decisions."
+  },
+  {
+    "objectID": "resume.html#selected-projects",
+    "href": "resume.html#selected-projects",
+    "title": "Resume",
+    "section": "Selected Projects",
+    "text": "Selected Projects\n\nAI-Driven Legal Information System Analytics\n\nDesigned a behavior-based segmentation framework to identify high-intent users.\nBuilt models to forecast downstream conversion and engagement value.\nDeveloped business recommendations to improve user experience and operational performance.\n\n\n\nEmployee Promotion Modeling\n\nCompared multiple machine learning models including Logistic Regression, Random Forest, Bagging, Gradient Boosting, and AdaBoost.\nIdentified key drivers of promotion outcomes and translated findings into management recommendations.\n\n\n\nE-commerce User Session Revenue Prediction\n\nBuilt classification models to predict online session revenue conversion.\nEvaluated performance using accuracy, precision, recall, F1-score, and AUC.\nFound AdaBoost to be the strongest-performing model in terms of predictive balance and stability."
+  },
+  {
+    "objectID": "resume.html#publication",
+    "href": "resume.html#publication",
+    "title": "Resume",
+    "section": "Publication",
+    "text": "Publication\nLi, B., Geng, J., Lu, Q., & Xing, Z. (2024). Optimizing Employee Promotions: A Machine Learning Approach Using AdaBoost. Presented at the 3rd International Conference on Financial Technology and Business Analysis (ICFTBA 2024), Murcia, Spain."
+  },
+  {
+    "objectID": "resume.html#awards-leadership",
+    "href": "resume.html#awards-leadership",
+    "title": "Resume",
+    "section": "Awards & Leadership",
+    "text": "Awards & Leadership\n\nFirst Place, Provincial Finals — National Finance Challenge 2024\nThird Place, School Level — China International College Students’ Innovation Competition 2024\nFirst Place — China University Business Elite Challenge\nSecond Place — EY ESG National College Innovation Competition\nClass Representative, HQU International Business Class of 2025\nTeaching Assistant, HQU International School"
+  },
+  {
+    "objectID": "resume.html#skills",
+    "href": "resume.html#skills",
+    "title": "Resume",
+    "section": "Skills",
+    "text": "Skills\nProgramming & Analytics: Python, R, SQL, Tableau, SPSS, Excel, VBA\nPython Libraries: Pandas, NumPy, Matplotlib, Seaborn, Pyecharts\nLanguages: Mandarin Chinese (Native), English"
+  },
+  {
+    "objectID": "coursework.html#learning-goals",
+    "href": "coursework.html#learning-goals",
+    "title": "Coursework",
+    "section": "",
+    "text": "Through my graduate study, I aim to strengthen my ability to:\n\ntranslate business questions into analytical problems\ncommunicate insights clearly\nsupport decisions with data"
+  },
+  {
+    "objectID": "AB_Testing.html#conclusion",
+    "href": "AB_Testing.html#conclusion",
+    "title": "A/B Testing a Call to Action",
+    "section": "Conclusion",
+    "text": "Conclusion\nA/B testing often looks like a lightweight product tool, but under the surface it is a compact lesson in frequentist statistics. The difference in observed conversion rates is an estimator; the Law of Large Numbers explains why it stabilizes; the bootstrap shows how uncertainty can be quantified; the Central Limit Theorem explains why Normal-based inference becomes reasonable; and hypothesis testing turns that logic into a formal decision rule.\nThe regression reframing shows that this same experiment fits naturally into a broader modeling framework, while the peeking example shows how easy it is to misuse statistical evidence when operational convenience takes over. That, in the end, may be the most useful lesson from the entire exercise: the strength of an A/B test comes not only from having data, but from respecting the statistical logic that makes those data trustworthy."
   }
 ]
