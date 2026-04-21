@@ -1,0 +1,691 @@
+---
+title: "What Happened When New Jersey Raised the Minimum Wage?"
+subtitle: "Reading Card and Krueger (1994) as a study in identification, not just a surprising result"
+author: "Jie Geng"
+date: today
+
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    toc-location: right
+    theme: cosmo
+    code-fold: false
+    html-math-method: mathjax
+    fig-format: png
+    fig-responsive: true
+
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+knitr::opts_chunk$set(
+  dev = "png",
+  dpi = 240,
+  fig.retina = 2,
+  out.width = "100%",
+  fig.align = "center"
+)
+
+library(tidyverse)
+library(readr)
+library(gt)
+library(broom)
+library(scales)
+library(glue)
+
+site_blue <- "#3567D6"
+site_blue_dark <- "#244A9B"
+site_text <- "#34495E"
+site_muted <- "#6F8499"
+site_soft <- "#F7FAFF"
+site_soft2 <- "#FCFDFF"
+site_border <- "#D8E3F2"
+site_grid <- "#DCE5F2"
+site_gold <- "#C69214"
+
+theme_set(
+  theme_minimal(base_size = 13) +
+    theme(
+      plot.title = element_text(
+        face = "bold",
+        size = 18,
+        color = site_blue_dark,
+        margin = margin(b = 4)
+      ),
+      plot.subtitle = element_text(
+        size = 11.5,
+        color = site_text,
+        margin = margin(b = 10)
+      ),
+      axis.title = element_text(face = "bold", color = site_text),
+      axis.text = element_text(color = site_text),
+      panel.grid.minor = element_blank(),
+      panel.grid.major = element_line(color = site_grid, linewidth = 0.45),
+      panel.background = element_rect(fill = site_soft2, color = NA),
+      plot.background = element_rect(fill = site_soft, color = NA),
+      panel.border = element_rect(color = site_border, fill = NA, linewidth = 0.7),
+      legend.position = "top",
+      legend.title = element_blank(),
+      legend.text = element_text(color = site_text),
+      plot.caption = element_text(color = site_muted, size = 10.2),
+      plot.margin = margin(18, 18, 18, 18)
+    )
+)
+
+style_gt <- function(tbl) {
+  tbl |>
+    tab_options(
+      table.background.color = "white",
+      heading.background.color = "white",
+      column_labels.background.color = "#EEF4FD",
+      table.border.top.color = site_blue_dark,
+      table.border.bottom.color = site_blue_dark,
+      heading.border.bottom.color = site_blue_dark,
+      column_labels.border.bottom.color = site_border,
+      table.font.color = site_text,
+      data_row.padding = px(8),
+      table_body.hlines.color = "#DCE6F3",
+      row_group.border.top.color = site_border,
+      row_group.border.bottom.color = site_border,
+      table.width = pct(100),
+      table.font.size = px(14)
+    ) |>
+    tab_style(
+      style = list(
+        cell_text(weight = "bold", color = site_blue_dark, size = px(18))
+      ),
+      locations = cells_title(groups = "title")
+    ) |>
+    tab_style(
+      style = list(
+        cell_text(color = site_text, size = px(12))
+      ),
+      locations = cells_title(groups = "subtitle")
+    )
+}
+
+mean_se <- function(x) {
+  x <- x[!is.na(x)]
+  c(mean = mean(x), se = sd(x) / sqrt(length(x)))
+}
+
+welch_t <- function(data, var_name) {
+  x_nj <- data |> filter(nj == 1) |> pull(all_of(var_name))
+  x_pa <- data |> filter(nj == 0) |> pull(all_of(var_name))
+  x_nj <- x_nj[!is.na(x_nj)]
+  x_pa <- x_pa[!is.na(x_pa)]
+  if (length(x_nj) < 2 || length(x_pa) < 2) return(NA_real_)
+  t.test(x_nj, x_pa)$statistic |> as.numeric()
+}
+
+fmt_mean_se <- function(mean, se, digits_main = 1, digits_se = 2) {
+  glue(
+    "{format(round(mean, digits_main), nsmall = digits_main)}<br>",
+    "<span style='font-size:85%; color:#6f8499;'>",
+    "({format(round(se, digits_se), nsmall = digits_se)})",
+    "</span>"
+  )
+}
+
+fmt_coef_se <- function(est, se, digits = 2) {
+  glue(
+    "{format(round(est, digits), nsmall = digits)}<br>",
+    "<span style='font-size:85%; color:#6f8499;'>",
+    "({format(round(se, digits), nsmall = digits)})",
+    "</span>"
+  )
+}
+
+colspecs <- readr::fwf_positions(
+  start = c(1,5,7,9,11,13,15,17,19,21,23,26,32,38,44,50,56,62,64,70,72,78,84,90,96,102,105,108,110,112,119,122,128,134,140,146,152,158,160,162,168,174,180,186,192,195),
+  end   = c(3,5,7,9,11,13,15,17,19,21,24,30,36,42,48,54,60,62,68,70,76,82,88,94,100,103,106,108,110,117,120,126,132,138,144,150,156,158,160,166,172,178,184,190,193,196),
+  col_names = c(
+    "sheet","chain","co_owned","state","southj","centralj","northj","pa1","pa2","shore",
+    "ncalls","empft","emppt","nmgrs","wage_st","inctime","firstinc","bonus","pctaff","meals",
+    "open","hrsopen","psoda","pfry","pentree","nregs","nregs11",
+    "type2","status2","date2","ncalls2","empft2","emppt2","nmgrs2","wage_st2","inctime2","firstin2",
+    "special2","meals2","open2r","hrsopen2","psoda2","pfry2","pentree2","nregs2","nregs112"
+  )
+)
+
+df <- readr::read_fwf(
+  file = "public.dat",
+  col_positions = colspecs,
+  na = ".",
+  trim_ws = TRUE
+)
+
+df <- df |>
+  mutate(
+    emptot = emppt * 0.5 + empft + nmgrs,
+    emptot2 = emppt2 * 0.5 + empft2 + nmgrs2,
+    demp = emptot2 - emptot,
+    dwage = wage_st2 - wage_st,
+    gap = case_when(
+      state == 0 ~ 0,
+      state == 1 & wage_st >= 5.05 ~ 0,
+      state == 1 & wage_st > 0 & wage_st < 5.05 ~ (5.05 - wage_st) / wage_st,
+      TRUE ~ NA_real_
+    ),
+    nj = state,
+    bk = as.integer(chain == 1),
+    kfc = as.integer(chain == 2),
+    roys = as.integer(chain == 3),
+    wendys = as.integer(chain == 4),
+    pmeal = psoda + pfry + pentree,
+    pmeal2 = psoda2 + pfry2 + pentree2,
+    closed = as.integer(status2 == 3),
+    fracft = empft / emptot,
+    fracft2 = if_else(emptot2 > 0, empft2 / emptot2, NA_real_),
+    atmin = as.integer(abs(wage_st - 4.25) < 1e-8),
+    atmin2 = as.integer(abs(wage_st2 - 4.25) < 1e-8),
+    newmin = as.integer(abs(wage_st2 - 5.05) < 1e-8),
+    icode = case_when(
+      nj == 0 ~ "Pennsylvania",
+      nj == 1 & abs(wage_st - 4.25) < 1e-8 ~ "NJ low-wage",
+      nj == 1 & wage_st >= 5.00 ~ "NJ high-wage",
+      nj == 1 & wage_st > 4.25 & wage_st < 5.00 ~ "NJ mid-wage",
+      TRUE ~ "Other NJ stores"
+    )
+  )
+
+panel1 <- tribble(
+  ~panel, ~var, ~label, ~pct,
+  "Store mix", "bk", "Burger King", TRUE,
+  "Store mix", "kfc", "KFC", TRUE,
+  "Store mix", "roys", "Roy Rogers", TRUE,
+  "Store mix", "wendys", "Wendy's", TRUE,
+  "Store mix", "co_owned", "Company-owned", TRUE
+)
+
+panel2 <- tribble(
+  ~panel, ~var, ~label, ~pct,
+  "Before the policy", "emptot", "FTE employment", FALSE,
+  "Before the policy", "fracft", "Percentage full-time employees", TRUE,
+  "Before the policy", "wage_st", "Starting wage", FALSE,
+  "Before the policy", "atmin", "Wage = $4.25 (percentage)", TRUE,
+  "Before the policy", "pmeal", "Price of full meal", FALSE,
+  "Before the policy", "hrsopen", "Hours open (weekday)", FALSE,
+  "Before the policy", "bonus", "Recruiting bonus", TRUE
+)
+
+panel3 <- tribble(
+  ~panel, ~var, ~label, ~pct,
+  "After the policy", "emptot2", "FTE employment", FALSE,
+  "After the policy", "fracft2", "Percentage full-time employees", TRUE,
+  "After the policy", "wage_st2", "Starting wage", FALSE,
+  "After the policy", "atmin2", "Wage = $4.25 (percentage)", TRUE,
+  "After the policy", "newmin", "Wage = $5.05 (percentage)", TRUE,
+  "After the policy", "pmeal2", "Price of full meal", FALSE,
+  "After the policy", "hrsopen2", "Hours open (weekday)", FALSE,
+  "After the policy", "special2", "Special hiring program", TRUE
+)
+
+table2_spec <- bind_rows(panel1, panel2, panel3)
+
+table2_tbl <- map_dfr(seq_len(nrow(table2_spec)), function(i) {
+  v <- table2_spec$var[i]
+  pct <- table2_spec$pct[i]
+
+  nj_stats <- mean_se(df |> filter(nj == 1) |> pull(all_of(v)))
+  pa_stats <- mean_se(df |> filter(nj == 0) |> pull(all_of(v)))
+  tval <- welch_t(df, v)
+  mult <- ifelse(pct, 100, 1)
+
+  tibble(
+    Panel = table2_spec$panel[i],
+    Variable = table2_spec$label[i],
+    NJ = if (table2_spec$panel[i] == "Store mix") {
+      sprintf("%.1f", nj_stats["mean"] * mult)
+    } else {
+      fmt_mean_se(nj_stats["mean"] * mult, nj_stats["se"] * mult, 1, 2)
+    },
+    PA = if (table2_spec$panel[i] == "Store mix") {
+      sprintf("%.1f", pa_stats["mean"] * mult)
+    } else {
+      fmt_mean_se(pa_stats["mean"] * mult, pa_stats["se"] * mult, 1, 2)
+    },
+    `t` = ifelse(is.na(tval), "", sprintf("%.1f", tval))
+  )
+})
+
+row1 <- df |> group_by(nj) |> summarise(v = mean(emptot, na.rm = TRUE)) |> pull(v)
+row2 <- df |> group_by(nj) |> summarise(v = mean(emptot2, na.rm = TRUE)) |> pull(v)
+row3 <- row2 - row1
+
+table3_tbl <- tibble(
+  `What is being compared?` = c(
+    "Average FTE employment before the policy",
+    "Average FTE employment after the policy",
+    "Change in average FTE employment"
+  ),
+  `New Jersey` = c(row1[2], row2[2], row3[2]),
+  `Pennsylvania` = c(row1[1], row2[1], row3[1]),
+  `NJ - PA` = c(row1[2] - row1[1], row2[2] - row2[1], row3[2] - row3[1])
+) |>
+  mutate(across(where(is.numeric), ~ sprintf("%.2f", .x)))
+
+did_est <- (row2[2] - row1[2]) - (row2[1] - row1[1])
+
+c1 <- df |>
+  filter(!is.na(demp)) |>
+  filter(closed == 1 | (closed == 0 & !is.na(dwage))) |>
+  filter(!is.na(gap))
+
+m1 <- lm(demp ~ nj, data = c1)
+m2 <- lm(demp ~ nj + bk + kfc + roys + co_owned, data = c1)
+m3 <- lm(demp ~ gap, data = c1)
+m4 <- lm(demp ~ gap + bk + kfc + roys + co_owned, data = c1)
+m5 <- lm(demp ~ gap + bk + kfc + roys + centralj + southj + pa1 + pa2, data = c1)
+
+p_controls_ii <- anova(m1, m2)$`Pr(>F)`[2]
+p_controls_iv <- anova(m3, m4)$`Pr(>F)`[2]
+p_controls_v  <- anova(m4, m5)$`Pr(>F)`[2]
+
+t4 <- tibble(
+  `Model ingredient` = c(
+    "New Jersey dummy",
+    "Initial wage gap",
+    "Chain and ownership controls",
+    "Regional controls",
+    "Residual standard error",
+    "Joint p-value for added controls"
+  ),
+  `(i)` = c(
+    fmt_coef_se(coef(m1)[["nj"]], summary(m1)$coefficients["nj", "Std. Error"]),
+    "",
+    "no",
+    "no",
+    sprintf("%.2f", sigma(m1)),
+    ""
+  ),
+  `(ii)` = c(
+    fmt_coef_se(coef(m2)[["nj"]], summary(m2)$coefficients["nj", "Std. Error"]),
+    "",
+    "yes",
+    "no",
+    sprintf("%.2f", sigma(m2)),
+    sprintf("%.2f", p_controls_ii)
+  ),
+  `(iii)` = c(
+    "",
+    fmt_coef_se(coef(m3)[["gap"]], summary(m3)$coefficients["gap", "Std. Error"]),
+    "no",
+    "no",
+    sprintf("%.2f", sigma(m3)),
+    ""
+  ),
+  `(iv)` = c(
+    "",
+    fmt_coef_se(coef(m4)[["gap"]], summary(m4)$coefficients["gap", "Std. Error"]),
+    "yes",
+    "no",
+    sprintf("%.2f", sigma(m4)),
+    sprintf("%.2f", p_controls_iv)
+  ),
+  `(v)` = c(
+    "",
+    fmt_coef_se(coef(m5)[["gap"]], summary(m5)$coefficients["gap", "Std. Error"]),
+    "yes",
+    "yes",
+    sprintf("%.2f", sigma(m5)),
+    sprintf("%.2f", p_controls_v)
+  )
+)
+
+did_plot <- tibble(
+  state = c("New Jersey", "New Jersey", "Pennsylvania", "Pennsylvania"),
+  period = factor(c("Before", "After", "Before", "After"), levels = c("Before", "After")),
+  fte = c(row1[2], row2[2], row1[1], row2[1])
+) |>
+  mutate(label_y = c(row1[2] + 0.18, row2[2] + 0.18, row1[1] + 0.18, row2[1] + 0.18))
+
+coef_plot <- bind_rows(
+  tidy(m1) |> filter(term == "nj")  |> mutate(model = "(i) State comparison", metric = "NJ dummy"),
+  tidy(m2) |> filter(term == "nj")  |> mutate(model = "(ii) + chain / ownership", metric = "NJ dummy"),
+  tidy(m3) |> filter(term == "gap") |> mutate(model = "(iii) Exposure only", metric = "Wage gap"),
+  tidy(m4) |> filter(term == "gap") |> mutate(model = "(iv) + chain / ownership", metric = "Wage gap"),
+  tidy(m5) |> filter(term == "gap") |> mutate(model = "(v) + regional controls", metric = "Wage gap")
+) |>
+  mutate(
+    conf.low = estimate - 1.96 * std.error,
+    conf.high = estimate + 1.96 * std.error,
+    model = factor(model, levels = c(
+      "(i) State comparison",
+      "(ii) + chain / ownership",
+      "(iii) Exposure only",
+      "(iv) + chain / ownership",
+      "(v) + regional controls"
+    ))
+  )
+
+nj_check <- df |>
+  filter(nj == 1, icode %in% c("NJ low-wage", "NJ mid-wage", "NJ high-wage")) |>
+  group_by(icode) |>
+  summarise(
+    mean_demp = mean(demp, na.rm = TRUE),
+    se = sd(demp, na.rm = TRUE) / sqrt(sum(!is.na(demp))),
+    .groups = "drop"
+  ) |>
+  mutate(
+    lower = mean_demp - 1.96 * se,
+    upper = mean_demp + 1.96 * se,
+    icode = factor(icode, levels = c("NJ low-wage", "NJ mid-wage", "NJ high-wage"))
+  )
+```
+
+<div class="article-deck">
+This is one of the most assigned papers in applied microeconomics. But the real reason it still matters is not the headline result. It is the way the paper builds credibility, one comparison at a time.
+</div>
+<hr class="article-divider">
+<div class="key-takeaways"> <h3>What this post tries to show</h3> <ul> <li>why the New Jersey–Pennsylvania comparison is plausible</li> <li>what the difference-in-differences estimate is actually subtracting out</li> <li>why the paper’s stronger checks make the result more credible</li> </ul> </div>
+
+## Why this paper still matters
+
+Card and Krueger’s paper is often remembered for one claim: a higher minimum wage did not seem to reduce fast-food employment. That is the sentence everyone quotes.
+
+But stopping there misses the interesting part.
+
+The paper is valuable because it shows what empirical credibility looks like when the treatment is not randomly assigned. New Jersey raised its minimum wage in April 1992, from $4.25 to $5.05. Nearby Pennsylvania did not. That policy contrast created a setting in which the authors could compare employment changes across places that were geographically close and economically linked. More importantly, they did not treat that contrast as automatically convincing. They kept asking whether the comparison held up under tighter tests.
+
+That is what makes the paper worth revisiting. It is not just a famous result. It is a useful example of how to reason about causal identification.
+
+## The setup in one clean equation
+
+The data contain two survey waves for fast-food restaurants in New Jersey and eastern Pennsylvania. Employment is measured in full-time equivalents, or FTEs:
+
+$$
+\text{FTE employment}
+=
+\text{full-time employees}
++ 0.5 \times \text{part-time employees}
++ \text{managers}.
+$$
+
+The outcome of interest is the change in employment from the first wave to the second:
+
+$$
+\Delta E_i = E_{i,2} - E_{i,1}.
+$$
+
+The core design then asks a simple question:
+
+> Did employment change more in New Jersey than in Pennsylvania after New Jersey’s minimum wage increase?
+
+That is the entire logic of difference-in-differences in this paper.
+
+## What has to be true before the design is believable
+
+Before thinking about regression, two basic checks matter.
+
+First, the comparison group has to be reasonably credible. New Jersey and Pennsylvania stores do not need to be identical, but they should look similar enough that their short-run employment movements can be meaningfully compared.
+
+Second, the treatment has to be real. If New Jersey restaurants were already paying wages above the new minimum, then the law would not bind and there would be little reason to expect an employment response at all.
+
+Those checks are not secondary. They are the foundation.
+
+<div class="table-wrap">
+
+```{r}
+#| results: asis
+
+table2_tbl |>
+  gt(groupname_col = "Panel") |>
+  fmt_markdown(columns = c(NJ, PA)) |>
+  cols_label(
+    Variable = "Variable",
+    NJ = "NJ",
+    PA = "PA",
+    t = md("*t*")
+  ) |>
+  cols_width(
+    Variable ~ px(320),
+    NJ ~ px(180),
+    PA ~ px(180),
+    t ~ px(70)
+  ) |>
+  cols_align(align = "left", columns = Variable) |>
+  cols_align(align = "center", columns = c(NJ, PA, t)) |>
+  tab_header(
+    title = "What the stores looked like before and after the law",
+    subtitle = "Means in New Jersey and Pennsylvania, with standard errors in parentheses"
+  ) |>
+  style_gt()
+```
+
+</div>
+Three details matter here.
+
+The first is that the two states look close enough on several pre-policy margins to make the comparison intelligible. Store mix is not identical, but it is not wildly different either. Starting wages are nearly the same before the law. Weekday operating hours are also close. None of that proves parallel trends, but it makes the comparison more defensible.
+
+The second is that the policy clearly bites. After the law, starting wages jump in New Jersey and barely move in Pennsylvania. The share of New Jersey stores paying exactly $5.05 also shoots up. That is crucial. A policy cannot affect behavior through wages unless it actually forces wages up.
+
+The third is more subtle: the paper does not begin with an identification claim. It begins with legibility. That is good empirical style. Before asking whether the policy changed employment, the authors first show that it changed wages.
+
+## The nine numbers that make the method click
+
+Difference-in-differences sounds abstract when introduced as notation. In practice, the idea is very concrete. We only need four averages and two changes.
+
+<div class="table-wrap">
+
+```{r}
+#| results: asis
+
+table3_tbl |>
+  gt() |>
+  cols_label(
+    `What is being compared?` = "What is being compared?",
+    `New Jersey` = "New Jersey",
+    `Pennsylvania` = "Pennsylvania",
+    `NJ - PA` = "NJ - PA"
+  ) |>
+  cols_width(
+    `What is being compared?` ~ px(360),
+    `New Jersey` ~ px(150),
+    `Pennsylvania` ~ px(150),
+    `NJ - PA` ~ px(120)
+  ) |>
+  cols_align(align = "left", columns = `What is being compared?`) |>
+  cols_align(align = "center", columns = c(`New Jersey`, `Pennsylvania`, `NJ - PA`)) |>
+  tab_header(
+    title = "The nine numbers behind the design",
+    subtitle = "Average FTE employment before and after the policy change"
+  ) |>
+  style_gt()
+```
+
+</div>
+Read the table row by row.
+
+If we only looked at New Jersey, we would conclude that employment rose slightly. But that would be incomplete, because Pennsylvania was not flat over the same period. Employment there fell. Difference-in-differences uses that Pennsylvania decline as the baseline for the broader environment and asks whether New Jersey moved differently relative to it.
+
+So the design is not saying, “employment increased in New Jersey.” It is saying, “employment in New Jersey changed more favorably than we would have expected given what happened in a nearby untreated comparison group.”
+
+That is a much more careful claim.
+
+```{r}
+#| fig-width: 8.4
+#| fig-height: 5.1
+
+ggplot(did_plot, aes(x = period, y = fte, group = state, color = state)) +
+  geom_line(linewidth = 1.35) +
+  geom_point(size = 3.8) +
+  geom_text(
+    data = subset(did_plot, state == "New Jersey"),
+    aes(label = sprintf("%.2f", fte)),
+    nudge_x = -0.02,
+    nudge_y = -0.18,
+    size = 4.0,
+    color = site_text
+  ) +
+  geom_text(
+    data = subset(did_plot, state == "Pennsylvania"),
+    aes(label = sprintf("%.2f", fte)),
+    nudge_x = 0.02,
+    nudge_y = 0.18,
+    size = 4.0,
+    color = site_text
+  ) +
+  scale_color_manual(values = c("New Jersey" = site_blue_dark, "Pennsylvania" = site_blue)) +
+  labs(
+    title = "Difference-in-differences in one picture",
+    subtitle = "Pennsylvania captures the common downturn; New Jersey is evaluated relative to that baseline",
+    x = NULL,
+    y = "Mean FTE employment"
+  ) +
+  annotate(
+    "text",
+    x = 2,
+    y = min(did_plot$fte) - 0.8,
+    label = paste0("DiD estimate = ", sprintf("%.2f", did_est)),
+    hjust = 1,
+    size = 4,
+    color = site_muted
+  ) +
+  theme(
+    legend.position = "top"
+  )
+```
+
+The figure helps for one reason: it makes the counterfactual visible. The downward movement in Pennsylvania is doing real work. It is the piece that keeps the analysis from collapsing into a naive before-after comparison.
+
+## Why the regression table is not the source of causality
+
+A lot of students learn this paper and come away thinking Table 4 is where causality appears. That is backwards.
+
+The causal leverage is already in the design. The role of the regression table is to test whether the design-driven result looks fragile or stable once the comparison is made tougher.
+
+<div class="table-wrap">
+
+```{r}
+#| results: asis
+
+t4 |>
+  gt() |>
+  fmt_markdown(columns = c(`(i)`, `(ii)`, `(iii)`, `(iv)`, `(v)`)) |>
+  cols_label(
+    `Model ingredient` = "Model ingredient",
+    `(i)` = "(i)",
+    `(ii)` = "(ii)",
+    `(iii)` = "(iii)",
+    `(iv)` = "(iv)",
+    `(v)` = "(v)"
+  ) |>
+  cols_width(
+    `Model ingredient` ~ px(310),
+    `(i)` ~ px(130),
+    `(ii)` ~ px(130),
+    `(iii)` ~ px(130),
+    `(iv)` ~ px(130),
+    `(v)` ~ px(130)
+  ) |>
+  cols_align(align = "left", columns = `Model ingredient`) |>
+  cols_align(align = "center", columns = c(`(i)`, `(ii)`, `(iii)`, `(iv)`, `(v)`)) |>
+  tab_header(
+    title = "How the result holds up under tougher models",
+    subtitle = "Five reduced-form models for change in employment"
+  ) |>
+  style_gt()
+```
+
+</div>
+There are two parts of this table that matter.
+
+The first is the boring but reassuring one: adding chain and ownership controls barely changes the New Jersey coefficient. That tells us the basic comparison is not being driven by an obvious compositional story like one state having more company-owned stores or more restaurants from a particular chain.
+
+The second is the more important move. The later columns stop using a simple New Jersey dummy and instead use a wage-gap measure. That variable captures how strongly each store was exposed to the law based on its initial wage. A store already paying relatively high wages should have little gap. A store starting far below $5.05 should have a large one.
+
+That shift is conceptually valuable because it makes the test more demanding. The question is no longer just whether treated places differ from untreated places. It becomes whether more exposed stores show systematically different employment changes than less exposed stores.
+
+That is much closer to the actual mechanism.
+
+```{r}
+#| fig-width: 8.8
+#| fig-height: 5.4
+
+ggplot(coef_plot, aes(y = model, x = estimate, color = metric)) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = site_muted, linewidth = 0.7) +
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high), height = 0.16, linewidth = 1) +
+  geom_point(size = 3.3) +
+  scale_color_manual(values = c("NJ dummy" = site_blue_dark, "Wage gap" = site_blue)) +
+  labs(
+    title = "The result is not hanging on one specification",
+    subtitle = "Across increasingly demanding models, the estimated employment effect stays on the positive side",
+    x = "Estimated effect on employment change",
+    y = NULL
+  ) +
+  theme(
+    legend.position = "top"
+  )
+```
+
+What I like about this figure is not that every interval is tight. They are not. What matters is that the paper keeps moving in the right direction methodologically: from a broad treatment-control contrast toward more granular exposure-based reasoning.
+
+## The smartest check in the paper happens inside New Jersey
+
+This is the part I think people remember less than they should.
+
+The paper does not rely only on Pennsylvania as a comparison group. It also asks whether New Jersey stores behaved differently depending on how exposed they were to the new minimum wage.
+
+That internal comparison is powerful because it addresses a natural worry: what if New Jersey and Pennsylvania were simply on different employment paths for reasons unrelated to the wage law?
+
+Inside New Jersey, that interstate story cannot do the same work. Stores that were already paying high wages should have been less affected by the policy. Stores starting near $4.25 should have been much more exposed. If those groups move differently, the interpretation becomes more convincing.
+
+```{r}
+#| fig-width: 8.4
+#| fig-height: 5.0
+
+ggplot(nj_check, aes(x = mean_demp, y = icode, color = icode)) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = site_muted, linewidth = 0.7) +
+  geom_errorbarh(aes(xmin = lower, xmax = upper), height = 0.14, linewidth = 1) +
+  geom_point(size = 3.5) +
+  scale_color_manual(values = c(
+    "NJ low-wage" = site_blue_dark,
+    "NJ mid-wage" = site_blue,
+    "NJ high-wage" = site_gold
+  )) +
+  labs(
+    title = "Inside New Jersey, exposure mattered",
+    subtitle = "Low-wage stores and high-wage stores did not move the same way after the policy",
+    x = "Average change in FTE employment",
+    y = NULL
+  ) +
+  theme(
+    legend.position = "none"
+  )
+```
+
+This graph is easy to misread, so it helps to be precise.
+
+The fact that the high-wage group has a negative mean change does not mean the paper has suddenly found a collapse in some employment rate. It simply means average FTE employment fell between the two survey waves for stores that were already paying relatively high starting wages.
+
+That is exactly why the comparison is informative. Those stores were the least exposed to the new law. If they look more like the untreated Pennsylvania group, while low-wage New Jersey stores look different, the internal logic of the paper gets stronger.
+
+In other words, the paper is not betting everything on one external control group. It is checking whether the mechanism shows up where it should.
+
+## What the paper does not prove
+
+This is also worth saying clearly.
+
+The paper does not prove that minimum wages can never reduce employment. It does not identify a universal law. It studies one policy episode in one industry, in one region, over a short horizon.
+
+That is not a weakness. It is what credible empirical work looks like. Good papers usually answer a narrower question than people later attribute to them.
+
+A better reading is this: in the setting the authors study, the data do not support the simple competitive prediction that a higher minimum wage mechanically reduced fast-food employment. And the reason that conclusion is persuasive is not a single table. It is the accumulation of descriptive checks, cross-state comparisons, within-state exposure contrasts, and robustness exercises.
+
+## What I take away from this paper
+
+What stays with me is less the headline and more the discipline of the design.
+
+The paper first shows that the treatment really changed wages. Then it shows the comparison group is at least plausible. Then it gives the core difference-in-differences comparison in its simplest form. Then it asks whether that story survives when the model is tightened and when exposure is measured more directly.
+
+That ordering matters.
+
+The lesson is not that “regression proves causality.” The lesson is that good empirical work makes its identifying logic visible, then keeps stress-testing it. This paper is still useful because it teaches that habit extremely well.

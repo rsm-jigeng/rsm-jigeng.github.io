@@ -4,32 +4,61 @@ toc: true
 toc-location: right
 ---
 
-
 ## Learning Goals
 
-::: {.goal-card}
-Through my graduate study, I aim to strengthen my ability to:
+<div class="goal-card">
 
-- translate business questions into analytical problems
-- communicate insights clearly
-- support decisions with data
-:::
+I want this page to do more than list course names.
+My goal is to show how I am learning to move from **business intuition** to **empirical reasoning**.
 
-## Relevant Coursework
+Through graduate study, I want to become better at:
 
-::: {.course-card}
-### [A/B Testing (MGTA 495)](AB_Testing.qmd)
+- framing messy business questions as researchable analytical problems
+- distinguishing correlation from causal interpretation
+- explaining quantitative evidence in plain language
+- connecting statistical tools to real decision settings rather than treating them as isolated techniques
 
-Simulation of A/B experiments, hypothesis testing, and statistical inference.
+</div>
 
-**Key Topics**
-- Experimental design
+## Selected Writing from Coursework
 
-- Hypothesis testing
+<div class="course-card">
+  <h3><a href="AB_Testing.html">A/B Testing (MGTA 495)</a></h3>
+  <div class="course-meta">Experiment design, uncertainty, and decision-making under evidence</div>
 
-- Bootstrap standard errors
+  <p>
+    This post starts with a simple newsletter sign-up experiment, but the real focus is not the coding.
+    It is the logic of experimentation: what random assignment buys us, why sampling uncertainty matters,
+    and how treatment effects can be interpreted through both hypothesis testing and regression.
+  </p>
 
-- Central Limit Theorem
+  <div class="topic-label">Key ideas</div>
+  <ul>
+    <li>experimental design</li>
+    <li>bootstrap standard errors</li>
+    <li>central limit theorem</li>
+    <li>large-sample inference</li>
+    <li>regression as an interpretation tool</li>
+  </ul>
+</div>
 
-- A/B test evaluation
-:::
+<div class="course-card">
+  <h3><a href="Causal_Identification.html">Causal Identification (MGTA 495)</a></h3>
+  <div class="course-meta">A classic policy paper, rewritten as a readable causal story</div>
+
+  <p>
+    This post revisits Card and Krueger’s study of New Jersey’s 1992 minimum wage increase.
+    Instead of reproducing the paper section by section, I focus on the identification logic:
+    why eastern Pennsylvania works as a comparison group, what difference-in-differences removes,
+    and why the paper’s stronger tests matter for credibility.
+  </p>
+
+  <div class="topic-label">Key ideas</div>
+  <ul>
+    <li>difference-in-differences</li>
+    <li>treatment and control group logic</li>
+    <li>treatment intensity</li>
+    <li>specification checks</li>
+    <li>causal interpretation in observational data</li>
+  </ul>
+</div>
