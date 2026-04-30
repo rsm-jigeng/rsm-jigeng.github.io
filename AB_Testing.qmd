@@ -413,7 +413,7 @@ ggplot(boot_df, aes(x = theta_star)) +
   )
 ```
 
-Two things stand out here. First, the bootstrap standard error and the analytical standard error are very close, which is a reassuring sign that the uncertainty estimate is not an artifact of one particular method. Second, the resulting 95% confidence interval excludes zero. In plain language, the observed data are not just consistent with CTA A being better; they are inconsistent with the idea that the two messages perform equally well.
+Two things stand out here. This comparison is also valuable from a teaching perspective. It shows that the uncertainty estimate is not being driven by a single technique: both the resampling approach and the closed-form approach tell essentially the same story. That agreement makes the inference easier for readers to trust.First, the bootstrap standard error and the analytical standard error are very close, which is a reassuring sign that the uncertainty estimate is not an artifact of one particular method. Second, the resulting 95% confidence interval excludes zero. In plain language, the observed data are not just consistent with CTA A being better; they are inconsistent with the idea that the two messages perform equally well.
 
 ## The Central Limit Theorem
 
@@ -666,7 +666,7 @@ ggplot(peeking_results, aes(x = min_p)) +
   )
 ```
 
-The result is sobering. A process that feels like "just checking in" can nearly quadruple the false-positive rate. For A/B testing in practice, that means patience is not merely a managerial virtue; it is part of valid inference. If early stopping is going to be allowed, it needs a method designed for sequential testing rather than ordinary repeated p-values.
+The result is sobering. This takeaway is especially relevant outside the classroom. In real product settings, teams often feel pressure to monitor experiments continuously and stop early when a result looks promising. The simulation makes clear why that instinct can be misleading unless the analysis is designed for sequential testing from the start.A process that feels like "just checking in" can nearly quadruple the false-positive rate. For A/B testing in practice, that means patience is not merely a managerial virtue; it is part of valid inference. If early stopping is going to be allowed, it needs a method designed for sequential testing rather than ordinary repeated p-values.
 
 ## Conclusion
 
