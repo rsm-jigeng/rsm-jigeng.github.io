@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Coursework – Jie Geng | Personal Website</title>
+<title>My Projects – Jie Geng | Personal Website</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -26,23 +26,25 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-listing/list.min.js"></script>
+<script src="../../site_libs/quarto-listing/quarto-listing.js"></script>
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -70,9 +72,67 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script>
 
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-listing .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
 
-<link rel="stylesheet" href="style.css">
+    const options = {
+      valueNames: ['listing-title','listing-author','listing-date','listing-image','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      
+      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../style.css">
 </head>
 
 <body class="nav-fixed quarto-light">
@@ -82,7 +142,7 @@ ul.task-list li input[type="checkbox"] {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Jie Geng | Personal Website</span>
     </a>
   </div>
@@ -93,15 +153,15 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./index.html"> 
+    <a class="nav-link" href="../../index.html"> 
 <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./resume.html"> 
+    <a class="nav-link" href="../../resume.html"> 
 <span class="menu-text">Resume</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./coursework.html" aria-current="page"> 
+    <a class="nav-link" href="../../coursework.html"> 
 <span class="menu-text">Coursework</span></a>
   </li>  
 </ul>
@@ -115,22 +175,15 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#learning-goals" id="toc-learning-goals" class="nav-link active" data-scroll-target="#learning-goals">Learning Goals</a></li>
-  <li><a href="#selected-writing-from-coursework" id="toc-selected-writing-from-coursework" class="nav-link" data-scroll-target="#selected-writing-from-coursework">Selected Writing from Coursework</a></li>
-  </ul>
-</nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Coursework</h1>
+<h1 class="title">My Projects</h1>
 </div>
 
 
@@ -147,122 +200,97 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="learning-goals" class="level2">
-<h2 class="anchored" data-anchor-id="learning-goals">Learning Goals</h2>
-<div class="goal-card">
-<p>I want this page to do more than list course names. My goal is to show how I am learning to move from <strong>business intuition</strong> to <strong>empirical reasoning</strong>.</p>
-<p>Through graduate study, I want to become better at:</p>
-<ul>
-<li>framing messy business questions as researchable analytical problems</li>
-<li>distinguishing correlation from causal interpretation</li>
-<li>explaining quantitative evidence in plain language</li>
-<li>connecting statistical tools to real decision settings rather than treating them as isolated techniques</li>
-</ul>
-</div>
-</section>
-<section id="selected-writing-from-coursework" class="level2">
-<h2 class="anchored" data-anchor-id="selected-writing-from-coursework">Selected Writing from Coursework</h2>
-<div class="course-card">
-<h3 class="anchored">
-<a href="AB_Testing.html">A/B Testing (MGTA 495)</a>
-</h3>
-<div class="course-meta">
-Experiment design, uncertainty, and decision-making under evidence
-</div>
-<p>
-This post starts with a simple newsletter sign-up experiment, but the real focus is not the coding. It is the logic of experimentation: what random assignment buys us, why sampling uncertainty matters, and how treatment effects can be interpreted through both hypothesis testing and regression.
-</p>
-<div class="topic-label">
-Key ideas
-</div>
-<ul>
-<li>
-experimental design
-</li>
-<li>
-bootstrap standard errors
-</li>
-<li>
-central limit theorem
-</li>
-<li>
-large-sample inference
-</li>
-<li>
-regression as an interpretation tool
-</li>
-</ul>
-</div>
-<div class="course-card">
-<h3 class="anchored">
-<a href="Causal_Identification.html">Causal Identification (MGTA 495)</a>
-</h3>
-<div class="course-meta">
-A classic policy paper, rewritten as a readable causal story
-</div>
-<p>
-This post revisits Card and Krueger’s study of New Jersey’s 1992 minimum wage increase. Instead of reproducing the paper section by section, I focus on the identification logic: why eastern Pennsylvania works as a comparison group, what difference-in-differences removes, and why the paper’s stronger tests matter for credibility.
-</p>
-<div class="topic-label">
-Key ideas
-</div>
-<ul>
-<li>
-difference-in-differences
-</li>
-<li>
-treatment and control group logic
-</li>
-<li>
-treatment intensity
-</li>
-<li>
-specification checks
-</li>
-<li>
-causal interpretation in observational data
-</li>
-</ul>
-</div>
-<div class="course-card">
-<h3 class="anchored">
-<a href="Blueprinty.html">Poisson Regression &amp; MLE (MGTA 495)</a>
-</h3>
-<div class="course-meta">
-Maximum likelihood estimation and causal inference with count data
-</div>
-<p>
-This post asks whether Blueprinty’s patent software actually helps firms win more patents. Starting from first principles, I derive the Poisson log-likelihood analytically, verify it numerically with <code>optim()</code>, and extend the model to a full regression that controls for firm age and regional location. The final estimate uses counterfactual prediction to translate a multiplicative coefficient into a concrete, interpretable number of additional patents.
-</p>
-<div class="topic-label">
-Key ideas
-</div>
-<ul>
-<li>
-maximum likelihood estimation
-</li>
-<li>
-Poisson regression
-</li>
-<li>
-log-likelihood derivation
-</li>
-<li>
-observed Fisher information
-</li>
-<li>
-counterfactual prediction &amp; average marginal effects
-</li>
-<li>
-selection bias in observational data
-</li>
-</ul>
-</div>
 
 
-</section>
 
-</main> <!-- /main -->
+
+<div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
+<div class="list grid quarto-listing-cols-3">
+<div class="g-col-1" data-index="0" data-listing-date-sort="1776236400000" data-listing-file-modified-sort="1777407401186" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="11" data-listing-word-count-sort="2064">
+<a href="../../classmate-fork/quarto-website/projects/ab-testing/index.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top"><img loading='lazy' src="projects/ab-testing/index_files/figure-html/unnamed-chunk-2-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+A/B Testing a Call to Action
+</h5>
+<div class="card-text listing-description delink">
+Running a website often involves small design decisions that can influence user behavior. On my landing page, visitors have the option to sign up for a newsletter, and I…
+</div>
+<div class="card-attribution card-text-small justify">
+<div class="listing-author">
+Yiwei Zhang
+</div>
+<div class="listing-date">
+Apr 15, 2026
+</div>
+</div>
+</div>
+</div></a>
+</div>
+<div class="g-col-1" data-index="1" data-listing-date-sort="1777359600000" data-listing-file-modified-sort="1777407401199" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="34">
+<a href="../../classmate-fork/quarto-website/projects/project1/index.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top"><img loading='lazy' src="projects/project1/index_files/figure-html/unnamed-chunk-1-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Analysis of Cars
+</h5>
+<div class="card-text listing-description delink">
+Let’s investigate the relationship between fuel efficiency (<code>mpg</code>) and engine displacement (<code>disp</code>) from the <code>mtcars</code> dataset.
+</div>
+<div class="card-attribution card-text-small justify">
+<div class="listing-author">
+Yiwei Zhang
+</div>
+<div class="listing-date">
+Apr 28, 2026
+</div>
+</div>
+</div>
+</div></a>
+</div>
+<div class="g-col-1" data-index="2" data-listing-date-sort="1776754800000" data-listing-file-modified-sort="1777408738449" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1023">
+<a href="../../classmate-fork/quarto-website/projects/hw2/hw2_karlan_list.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top"><img loading='lazy' src="projects/hw2/hw2_karlan_list_files/figure-html/cell-6-output-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Replication: Karlan &amp; List (2007)
+</h5>
+<div class="card-text listing-description delink">
+Karlan and List (2007) study whether matching grants increase charitable giving in a large-scale natural field experiment. The authors partnered with a nonprofit…
+</div>
+<div class="card-attribution card-text-small justify">
+<div class="listing-author">
+Yiwei Zhang
+</div>
+<div class="listing-date">
+Apr 21, 2026
+</div>
+</div>
+</div>
+</div></a>
+</div>
+<div class="g-col-1" data-index="3" data-listing-file-modified-sort="1777407401199">
+<a href="../../classmate-fork/quarto-website/projects/project2/index.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<div class="listing-item-img-placeholder card-img-top" style="height: 150px;">&nbsp;</div>
+<div class="card-body post-contents">
+<div class="card-text listing-description delink">
+
+</div>
+<div class="card-attribution card-text-small start">
+<div class="listing-author">
+
+</div>
+</div>
+</div>
+</div></a>
+</div>
+</div>
+<div class="listing-no-matching d-none">No matching items</div>
+</div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";

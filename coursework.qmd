@@ -62,3 +62,26 @@ Through graduate study, I want to become better at:
     <li>causal interpretation in observational data</li>
   </ul>
 </div>
+
+<div class="course-card">
+  <h3><a href="Blueprinty.html">Poisson Regression & MLE (MGTA 495)</a></h3>
+  <div class="course-meta">Maximum likelihood estimation and causal inference with count data</div>
+
+  <p>
+    This post asks whether Blueprinty's patent software actually helps firms win more patents.
+    Starting from first principles, I derive the Poisson log-likelihood analytically, verify it
+    numerically with <code>optim()</code>, and extend the model to a full regression that controls
+    for firm age and regional location. The final estimate uses counterfactual prediction to
+    translate a multiplicative coefficient into a concrete, interpretable number of additional patents.
+  </p>
+
+  <div class="topic-label">Key ideas</div>
+  <ul>
+    <li>maximum likelihood estimation</li>
+    <li>Poisson regression</li>
+    <li>log-likelihood derivation</li>
+    <li>observed Fisher information</li>
+    <li>counterfactual prediction & average marginal effects</li>
+    <li>selection bias in observational data</li>
+  </ul>
+</div>

@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Your Name">
+<meta name="dcterms.date" content="2026-05-14">
 
-<title>Coursework – Jie Geng | Personal Website</title>
+<title>Poisson Regression and Maximum Likelihood Estimation – Jie Geng | Personal Website</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -22,6 +24,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -71,6 +108,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="style.css">
 </head>
@@ -101,7 +167,7 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">Resume</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./coursework.html" aria-current="page"> 
+    <a class="nav-link" href="./coursework.html"> 
 <span class="menu-text">Coursework</span></a>
   </li>  
 </ul>
@@ -120,8 +186,11 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#learning-goals" id="toc-learning-goals" class="nav-link active" data-scroll-target="#learning-goals">Learning Goals</a></li>
-  <li><a href="#selected-writing-from-coursework" id="toc-selected-writing-from-coursework" class="nav-link" data-scroll-target="#selected-writing-from-coursework">Selected Writing from Coursework</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#exploring-the-data" id="toc-exploring-the-data" class="nav-link" data-scroll-target="#exploring-the-data">Exploring the Data</a></li>
+  <li><a href="#a-simple-poisson-model-via-maximum-likelihood" id="toc-a-simple-poisson-model-via-maximum-likelihood" class="nav-link" data-scroll-target="#a-simple-poisson-model-via-maximum-likelihood">A Simple Poisson Model via Maximum Likelihood</a></li>
+  <li><a href="#poisson-regression" id="toc-poisson-regression" class="nav-link" data-scroll-target="#poisson-regression">Poisson Regression</a></li>
+  <li><a href="#the-effect-of-blueprintys-software" id="toc-the-effect-of-blueprintys-software" class="nav-link" data-scroll-target="#the-effect-of-blueprintys-software">The Effect of Blueprinty’s Software</a></li>
   </ul>
 </nav>
     </div>
@@ -130,14 +199,27 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Coursework</h1>
+<h1 class="title">Poisson Regression and Maximum Likelihood Estimation</h1>
+<p class="subtitle lead">A Case Study of Blueprinty’s Software and Patent Awards</p>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Your Name </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">May 14, 2026</p>
+    </div>
+  </div>
   
     
   </div>
@@ -147,116 +229,136 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="learning-goals" class="level2">
-<h2 class="anchored" data-anchor-id="learning-goals">Learning Goals</h2>
-<div class="goal-card">
-<p>I want this page to do more than list course names. My goal is to show how I am learning to move from <strong>business intuition</strong> to <strong>empirical reasoning</strong>.</p>
-<p>Through graduate study, I want to become better at:</p>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Write a short introduction for the reader that sets the scene. Cover the following points in your own words:</p>
 <ul>
-<li>framing messy business questions as researchable analytical problems</li>
-<li>distinguishing correlation from causal interpretation</li>
-<li>explaining quantitative evidence in plain language</li>
-<li>connecting statistical tools to real decision settings rather than treating them as isolated techniques</li>
+<li><p>Blueprinty is a small firm that makes software for developing blueprints specifically for submitting patent applications to the US patent office.</p></li>
+<li><p>Their marketing team would like to make the claim that patent applicants using Blueprinty’s software are more successful in getting their patent applications approved.</p></li>
+<li><p>The ideal dataset for studying such an effect would include each firm’s success rate before using Blueprinty’s software and after using it, but no such data is available.</p></li>
+<li><p>Instead, Blueprinty has collected data on 1,500 mature (non-startup) engineering firms. The data include each firm’s number of patents awarded over the last 5 years, regional location, age since incorporation, and whether or not the firm uses Blueprinty’s software.</p></li>
+<li><p>The marketing team wants to use this data to argue that firms using Blueprinty’s software are more successful in getting their patent applications approved. Explain to the reader why this is a non-trivial claim to evaluate: Blueprinty’s customers are not selected at random, so any raw difference in patent counts could reflect characteristics of the firms (e.g., age, region) rather than the software itself.</p></li>
 </ul>
+</div>
 </div>
 </section>
-<section id="selected-writing-from-coursework" class="level2">
-<h2 class="anchored" data-anchor-id="selected-writing-from-coursework">Selected Writing from Coursework</h2>
-<div class="course-card">
-<h3 class="anchored">
-<a href="AB_Testing.html">A/B Testing (MGTA 495)</a>
-</h3>
-<div class="course-meta">
-Experiment design, uncertainty, and decision-making under evidence
+<section id="exploring-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="exploring-the-data">Exploring the Data</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
-<p>
-This post starts with a simple newsletter sign-up experiment, but the real focus is not the coding. It is the logic of experimentation: what random assignment buys us, why sampling uncertainty matters, and how treatment effects can be interpreted through both hypothesis testing and regression.
-</p>
-<div class="topic-label">
-Key ideas
+<div class="callout-title-container flex-fill">
+Note
 </div>
+</div>
+<div class="callout-body-container callout-body">
 <ul>
-<li>
-experimental design
-</li>
-<li>
-bootstrap standard errors
-</li>
-<li>
-central limit theorem
-</li>
-<li>
-large-sample inference
-</li>
-<li>
-regression as an interpretation tool
-</li>
+<li><p>Read in the data from <code>blueprinty.csv</code>.</p></li>
+<li><p>Compare histograms of the number of patents by customer status (customers vs non-customers) and report the means of each group. Place the two histograms side by side with consistent x-axis scales so they are easy to compare. After the plots, write a few sentences describing what you observe.</p></li>
+<li><p>Blueprinty’s customers are not selected at random. It may be important to account for systematic differences in firm age and regional location between customers and non-customers. Compare the distribution of regions by customer status, and compare histograms of firm age by customer status. After each comparison, write a few sentences describing what you observe and explain to the reader why these differences matter for the analysis that follows.</p></li>
 </ul>
 </div>
-<div class="course-card">
-<h3 class="anchored">
-<a href="Causal_Identification.html">Causal Identification (MGTA 495)</a>
-</h3>
-<div class="course-meta">
-A classic policy paper, rewritten as a readable causal story
 </div>
-<p>
-This post revisits Card and Krueger’s study of New Jersey’s 1992 minimum wage increase. Instead of reproducing the paper section by section, I focus on the identification logic: why eastern Pennsylvania works as a comparison group, what difference-in-differences removes, and why the paper’s stronger tests matter for credibility.
-</p>
-<div class="topic-label">
-Key ideas
+</section>
+<section id="a-simple-poisson-model-via-maximum-likelihood" class="level2">
+<h2 class="anchored" data-anchor-id="a-simple-poisson-model-via-maximum-likelihood">A Simple Poisson Model via Maximum Likelihood</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <ul>
-<li>
-difference-in-differences
-</li>
-<li>
-treatment and control group logic
-</li>
-<li>
-treatment intensity
-</li>
-<li>
-specification checks
-</li>
-<li>
-causal interpretation in observational data
-</li>
+<li><p>The outcome variable is a count — the number of patents awarded to each firm over the last 5 years — so we can model it as a draw from a Poisson distribution. Write a short introduction explaining this modeling choice to the reader: counts cannot be negative and must be integer-valued, so the Normal distribution is a poor fit, and the Poisson distribution is the natural starting point for non-negative integer outcomes.</p></li>
+<li><p>Write down the likelihood and log-likelihood for <span class="math inline">\(Y \sim \text{Poisson}(\lambda)\)</span>, using the fact that</p></li>
+</ul>
+<p><span class="math display">\[
+f(Y|\lambda) = \frac{e^{-\lambda}\lambda^{Y}}{Y!}
+\]</span></p>
+<p>Show the derivation step by step so the reader can follow how the joint likelihood is built from the iid assumption and how the log-likelihood simplifies.</p>
+<ul>
+<li><p>Code the log-likelihood function in the language of your choice. It should be a function of <span class="math inline">\(\lambda\)</span> and <span class="math inline">\(Y\)</span>. For example, in R:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>poisson_loglikelihood <span class="ot">&lt;-</span> <span class="cf">function</span>(lambda, Y){</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>   ...</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+<li><p>Use your function to plot <span class="math inline">\(\lambda\)</span> on the horizontal axis and the log-likelihood on the vertical axis for a range of values of <span class="math inline">\(\lambda\)</span>, using the observed number of patents as the input for <span class="math inline">\(Y\)</span>. After the plot, write a sentence or two explaining what the curve shows and how to “read” the MLE off it visually.</p></li>
+<li><p>If you’re feeling mathematical, take the first derivative of the log-likelihood, set it equal to zero, and solve for <span class="math inline">\(\lambda\)</span>. You will find <span class="math inline">\(\hat\lambda_{\text{MLE}} = \bar{Y}\)</span>, which “feels right” because the mean of a Poisson distribution is <span class="math inline">\(\lambda\)</span>.</p></li>
+<li><p>Find the MLE numerically by maximizing your log-likelihood function with R’s <code>optim()</code> or Python’s <code>sp.optimize()</code>. Compare your numerical answer to the sample mean — they should be (nearly) identical, and you should explain to the reader why.</p></li>
 </ul>
 </div>
-<div class="course-card">
-<h3 class="anchored">
-<a href="Blueprinty.html">Poisson Regression &amp; MLE (MGTA 495)</a>
-</h3>
-<div class="course-meta">
-Maximum likelihood estimation and causal inference with count data
 </div>
-<p>
-This post asks whether Blueprinty’s patent software actually helps firms win more patents. Starting from first principles, I derive the Poisson log-likelihood analytically, verify it numerically with <code>optim()</code>, and extend the model to a full regression that controls for firm age and regional location. The final estimate uses counterfactual prediction to translate a multiplicative coefficient into a concrete, interpretable number of additional patents.
-</p>
-<div class="topic-label">
-Key ideas
+</section>
+<section id="poisson-regression" class="level2">
+<h2 class="anchored" data-anchor-id="poisson-regression">Poisson Regression</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <ul>
-<li>
-maximum likelihood estimation
-</li>
-<li>
-Poisson regression
-</li>
-<li>
-log-likelihood derivation
-</li>
-<li>
-observed Fisher information
-</li>
-<li>
-counterfactual prediction &amp; average marginal effects
-</li>
-<li>
-selection bias in observational data
-</li>
+<li>Now extend the simple Poisson model to a Poisson regression model so that each firm’s rate parameter depends on its own characteristics:</li>
 </ul>
+<p><span class="math display">\[
+Y_i \sim \text{Poisson}(\lambda_i) \qquad \text{where} \qquad \lambda_i = \exp(X_i'\beta)
+\]</span></p>
+<p>Write a short introduction explaining this extension to the reader. Instead of assuming every firm has the same patent rate <span class="math inline">\(\lambda\)</span>, we now let <span class="math inline">\(\lambda\)</span> vary across firms as a function of age, region, and customer status. Explain why we use <span class="math inline">\(\exp(\cdot)\)</span> as the inverse link: <span class="math inline">\(\lambda_i\)</span> must be positive, but <span class="math inline">\(X_i'\beta\)</span> can be any real number, so the exponential keeps <span class="math inline">\(\lambda_i\)</span> on the positive real line.</p>
+<ul>
+<li><p>Update your log-likelihood function from the previous section to take in a covariate matrix <span class="math inline">\(X\)</span> and a parameter vector <span class="math inline">\(\beta\)</span> in place of the scalar <span class="math inline">\(\lambda\)</span>. For example:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>poisson_regression_loglikelihood <span class="ot">&lt;-</span> <span class="cf">function</span>(beta, Y, X){</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>   ...</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+<li><p>Construct <span class="math inline">\(X\)</span> so that the first column is all 1’s (for the intercept), followed by columns for age, age squared, binary indicators for all but one of the regions, and the binary customer variable. Explain to the reader why you include age squared (the relationship between age and patenting is unlikely to be perfectly linear) and why you must drop one region (to avoid perfect collinearity with the intercept).</p></li>
+<li><p>Use <code>optim()</code> (or <code>sp.optimize()</code>) to find the MLE <span class="math inline">\(\hat\beta\)</span>, asking the optimizer to also return the Hessian. Use the Hessian to compute standard errors for the coefficients — the standard errors are the square roots of the diagonal of the negative inverse Hessian. Present a table of coefficients and standard errors.</p></li>
+<li><p>Check your results by fitting the same model with R’s <code>glm(..., family = poisson)</code> or Python’s <code>sm.GLM()</code>. The coefficient estimates should match closely; the standard errors may differ slightly due to the numerical approximation of the Hessian — explain this to the reader.</p></li>
+<li><p>Interpret the results. Walk the reader through what each coefficient tells you, paying particular attention to the sign and magnitude of the customer coefficient. Are the signs and magnitudes sensible?</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="the-effect-of-blueprintys-software" class="level2">
+<h2 class="anchored" data-anchor-id="the-effect-of-blueprintys-software">The Effect of Blueprinty’s Software</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p>The coefficients from a Poisson regression are not directly interpretable as “additional patents” because the model is multiplicative in <span class="math inline">\(\lambda\)</span>, not additive. To get a more interpretable answer, construct two counterfactual datasets:</p>
+<ol type="1">
+<li><span class="math inline">\(X_0\)</span>: a copy of your <span class="math inline">\(X\)</span> matrix where every firm’s <code>iscustomer</code> value is set to 0.</li>
+<li><span class="math inline">\(X_1\)</span>: a copy of your <span class="math inline">\(X\)</span> matrix where every firm’s <code>iscustomer</code> value is set to 1.</li>
+</ol></li>
+<li><p>Use your fitted model to predict the expected number of patents for every firm under each counterfactual, producing two vectors <span class="math inline">\(\hat{y}_0\)</span> and <span class="math inline">\(\hat{y}_1\)</span>.</p></li>
+<li><p>Compute the average of <span class="math inline">\(\hat{y}_1 - \hat{y}_0\)</span>. This is your estimate of the average effect of being a Blueprinty customer, holding age and region fixed at their observed values for each firm.</p></li>
+<li><p>Report the result and interpret it for the reader. Conclude with a careful statement about what the analysis does and does not establish: it provides evidence consistent with Blueprinty’s marketing claim, but because this is an observational study (not a randomized experiment), we cannot rule out unobserved characteristics that differ between customers and non-customers and could also drive patent counts.</p></li>
+</ul>
+</div>
 </div>
 
 

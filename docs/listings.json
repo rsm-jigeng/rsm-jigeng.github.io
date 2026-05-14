@@ -5,5 +5,14 @@
       "/projects/project1/index.html",
       "/projects/project2/index.html"
     ]
+  },
+  {
+    "listing": "/classmate-fork/quarto-website/projects.html",
+    "items": [
+      "/classmate-fork/quarto-website/projects/ab-testing/index.html",
+      "/classmate-fork/quarto-website/projects/project1/index.html",
+      "/classmate-fork/quarto-website/projects/hw2/hw2_karlan_list.html",
+      "/classmate-fork/quarto-website/projects/project2/index.html"
+    ]
   }
 ]
