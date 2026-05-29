@@ -85,3 +85,25 @@ Through graduate study, I want to become better at:
     <li>selection bias in observational data</li>
   </ul>
 </div>
+
+<div class="course-card">
+  <h3><a href="hw4.html">MaxDiff Analysis of MSBA Class Preferences (MGTA 495)</a></h3>
+  <div class="course-meta">Counts, MLE, and Bayesian estimation of the MNL model</div>
+
+  <p>
+    This post analyzes a Best-Worst Scaling survey in which MSBA students ranked all 10 core
+    Rady courses. I estimate preference scores three ways—a simple counts analysis, maximum
+    likelihood estimation of a multinomial logit model, and a Bayesian Metropolis-Hastings
+    sampler—and compare what each method reveals about the ranking and uncertainty around it.
+  </p>
+
+  <div class="topic-label">Key ideas</div>
+  <ul>
+    <li>MaxDiff / Best-Worst Scaling survey design</li>
+    <li>multinomial logit (MNL) model</li>
+    <li>maximum likelihood estimation with <code>optim()</code></li>
+    <li>Metropolis-Hastings MCMC sampler</li>
+    <li>shares of preference & posterior credible intervals</li>
+    <li>bootstrap confidence intervals</li>
+  </ul>
+</div>
