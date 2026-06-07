@@ -107,3 +107,25 @@ Through graduate study, I want to become better at:
     <li>bootstrap confidence intervals</li>
   </ul>
 </div>
+
+<div class="course-card">
+  <h3><a href="hw5.html">Key Drivers Analysis (MGTA 495)</a></h3>
+  <div class="course-meta">Variable importance across six competing methods</div>
+
+  <p>
+    Which brand attributes actually drive customer satisfaction — and do different methods agree?
+    This post benchmarks six variable importance techniques on a 2,553-customer survey dataset,
+    including a from-scratch implementation of exact Shapley values and an extension to logistic
+    regression using McFadden's pseudo-R² for the binary outcome case.
+  </p>
+
+  <div class="topic-label">Key ideas</div>
+  <ul>
+    <li>Pearson correlation & standardized regression coefficients</li>
+    <li>drop-one (usefulness) analysis</li>
+    <li>exact Shapley values via coalition enumeration (custom implementation)</li>
+    <li>Johnson's relative weights via SVD</li>
+    <li>random forest mean decrease in Gini impurity</li>
+    <li>Shapley decomposition for logistic regression (McFadden pseudo-R²)</li>
+  </ul>
+</div>
