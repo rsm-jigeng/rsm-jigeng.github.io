@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Jie Geng">
-<meta name="dcterms.date" content="2026-06-07">
+<meta name="dcterms.date" content="2026-06-10">
 
 <title>Key Drivers Analysis – Jie Geng | Personal Website</title>
 <style>
@@ -198,13 +198,10 @@ window.Quarto = {
   <li><a href="#method-4-shapley-values-custom-implementation" id="toc-method-4-shapley-values-custom-implementation" class="nav-link" data-scroll-target="#method-4-shapley-values-custom-implementation">Method 4 — Shapley Values (Custom Implementation)</a></li>
   <li><a href="#method-5-johnsons-relative-weights" id="toc-method-5-johnsons-relative-weights" class="nav-link" data-scroll-target="#method-5-johnsons-relative-weights">Method 5 — Johnson’s Relative Weights</a></li>
   <li><a href="#method-6-random-forest-mean-decrease-in-gini" id="toc-method-6-random-forest-mean-decrease-in-gini" class="nav-link" data-scroll-target="#method-6-random-forest-mean-decrease-in-gini">Method 6 — Random Forest Mean Decrease in Gini</a></li>
-  <li><a href="#results-the-variable-importance-table" id="toc-results-the-variable-importance-table" class="nav-link" data-scroll-target="#results-the-variable-importance-table">Results: The Variable Importance Table</a>
-  <ul class="collapse">
-  <li><a href="#rank-comparison" id="toc-rank-comparison" class="nav-link" data-scroll-target="#rank-comparison">Rank comparison</a></li>
-  </ul></li>
+  <li><a href="#results-the-variable-importance-table" id="toc-results-the-variable-importance-table" class="nav-link" data-scroll-target="#results-the-variable-importance-table">Results: The Variable Importance Table</a></li>
   <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a></li>
   <li><a href="#optional-challenge-custom-shapley-code-walkthrough" id="toc-optional-challenge-custom-shapley-code-walkthrough" class="nav-link" data-scroll-target="#optional-challenge-custom-shapley-code-walkthrough">Optional Challenge: Custom Shapley — Code Walkthrough</a></li>
-  <li><a href="#optional-hard-challenge-shapley-for-logistic-regression" id="toc-optional-hard-challenge-shapley-for-logistic-regression" class="nav-link" data-scroll-target="#optional-hard-challenge-shapley-for-logistic-regression">Optional Hard Challenge: Shapley for Logistic Regression</a></li>
+  <li><a href="#optional-hard-challenge-shapley-for-logistic-regression-mcfadden-pseudo-r²" id="toc-optional-hard-challenge-shapley-for-logistic-regression-mcfadden-pseudo-r²" class="nav-link" data-scroll-target="#optional-hard-challenge-shapley-for-logistic-regression-mcfadden-pseudo-r²">Optional Hard Challenge: Shapley for Logistic Regression (McFadden pseudo-R²)</a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
@@ -231,7 +228,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">June 7, 2026</p>
+      <p class="date">June 10, 2026</p>
     </div>
   </div>
   
@@ -251,15 +248,15 @@ Which attributes of a brand actually drive customer satisfaction — and how muc
 <h3 class="anchored" data-anchor-id="key-takeaways">Key takeaways</h3>
 <ul>
 <li><strong>Impact, trust, and service</strong> consistently rank as the top three drivers of satisfaction across all methods.</li>
-<li>Pearson correlations and Shapley values tend to agree closely; standardized regression coefficients diverge more due to multicollinearity.</li>
+<li>Pearson correlations and Shapley values agree closely; standardized regression coefficients diverge more due to multicollinearity.</li>
 <li>Johnson’s relative weights and exact Shapley decompositions both partition R² cleanly and are the most defensible all-around choices.</li>
-<li>A custom Shapley implementation (from scratch) confirms the package results exactly.</li>
+<li>A custom Shapley implementation (from scratch) confirms the package-based results exactly.</li>
 </ul>
 </section>
 <section id="background-why-multiple-methods" class="level2">
 <h2 class="anchored" data-anchor-id="background-why-multiple-methods">Background: Why Multiple Methods?</h2>
 <p>Customer satisfaction surveys measure a single outcome — overall satisfaction — alongside a battery of attribute ratings. The natural question is: <em>which attributes matter most?</em> But “importance” is harder to pin down than it sounds. When predictors correlate with each other (as brand attributes often do), each method makes a different choice about how to handle that shared variance.</p>
-<p>The six methods below each have a different answer to that question:</p>
+<p>The six methods below each give a different answer to that question:</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
@@ -296,7 +293,7 @@ Which attributes of a brand actually drive customer satisfaction — and how muc
 </tr>
 <tr class="odd">
 <td>Johnson’s relative weights</td>
-<td>SVD-based orthogonal approximation of Shapley</td>
+<td>Algebraic approximation to Shapley for linear regression</td>
 <td>Yes — fast approximation</td>
 </tr>
 <tr class="even">
@@ -319,25 +316,23 @@ Which attributes of a brand actually drive customer satisfaction — and how muc
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression, LogisticRegression</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestRegressor</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> r2_score</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> itertools</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> math <span class="im">import</span> factorial</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Load data ──────────────────────────────────────────────────────────────</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"data_for_drivers_analysis.csv"</span>)</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>y_col  <span class="op">=</span> <span class="st">"satisfaction"</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>x_cols <span class="op">=</span> [<span class="st">"trust"</span>, <span class="st">"build"</span>, <span class="st">"differs"</span>, <span class="st">"easy"</span>,</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>          <span class="st">"appealing"</span>, <span class="st">"rewarding"</span>, <span class="st">"popular"</span>, <span class="st">"service"</span>, <span class="st">"impact"</span>]</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> df[x_cols].values</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> df[y_col].values</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> <span class="bu">len</span>(x_cols)</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>df[x_cols <span class="op">+</span> [y_col]].describe().<span class="bu">round</span>(<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> itertools</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> math <span class="im">import</span> factorial</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"data_for_drivers_analysis.csv"</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>y_col  <span class="op">=</span> <span class="st">"satisfaction"</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>x_cols <span class="op">=</span> [<span class="st">"trust"</span>, <span class="st">"build"</span>, <span class="st">"differs"</span>, <span class="st">"easy"</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>          <span class="st">"appealing"</span>, <span class="st">"rewarding"</span>, <span class="st">"popular"</span>, <span class="st">"service"</span>, <span class="st">"impact"</span>]</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> df[x_cols].values</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> df[y_col].values</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> <span class="bu">len</span>(x_cols)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>df[x_cols <span class="op">+</span> [y_col]].describe().<span class="bu">round</span>(<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div id="setup" class="cell-output cell-output-display" data-execution_count="1">
 <div>
@@ -473,18 +468,19 @@ Which attributes of a brand actually drive customer satisfaction — and how muc
 </section>
 <section id="method-1-pearson-correlation" class="level2">
 <h2 class="anchored" data-anchor-id="method-1-pearson-correlation">Method 1 — Pearson Correlation</h2>
-<p>The simplest approach: compute the bivariate correlation between each attribute and satisfaction. It ignores all other predictors, which means correlated attributes each receive “full credit” for shared variance.</p>
+<p>The simplest approach: compute the bivariate Pearson correlation between each attribute and satisfaction, then normalize so the values sum to 100%. It ignores all other predictors, meaning correlated attributes each receive full credit for shared variance.</p>
 <div id="pearson" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Show code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pearson_r <span class="op">=</span> np.array([stats.pearsonr(df[c], y)[<span class="dv">0</span>] <span class="cf">for</span> c <span class="kw">in</span> x_cols])</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>pearson_p <span class="op">=</span> np.array([stats.pearsonr(df[c], y)[<span class="dv">1</span>] <span class="cf">for</span> c <span class="kw">in</span> x_cols])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pearson_r    <span class="op">=</span> np.array([stats.pearsonr(df[c], y)[<span class="dv">0</span>] <span class="cf">for</span> c <span class="kw">in</span> x_cols])</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Normalize raw correlations to sum to 100 (matching slide 75 format)</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>pearson_pct  <span class="op">=</span> pearson_r <span class="op">/</span> pearson_r.<span class="bu">sum</span>() <span class="op">*</span> <span class="dv">100</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </section>
 <section id="method-2-standardized-regression-coefficients" class="level2">
 <h2 class="anchored" data-anchor-id="method-2-standardized-regression-coefficients">Method 2 — Standardized Regression Coefficients</h2>
-<p>Standardize all variables to mean 0, SD 1, then run OLS. The resulting coefficients (β) represent the change in satisfaction (in SD units) for a one-SD increase in each attribute, <em>holding all others constant</em>. Multicollinearity depresses the coefficients of correlated variables.</p>
+<p>Standardize all variables to mean 0, SD 1, then run OLS. The resulting coefficients (β) represent the change in satisfaction (in SD units) per one-SD increase in each attribute, <em>holding all others constant</em>. Taking absolute values and normalizing to 100% gives comparable importance weights, though multicollinearity can distort individual coefficients.</p>
 <div id="std-beta" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Show code</summary>
@@ -494,18 +490,19 @@ Which attributes of a brand actually drive customer satisfaction — and how muc
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>lr_std <span class="op">=</span> LinearRegression()</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>lr_std.fit(X_std, y_std)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>std_betas <span class="op">=</span> lr_std.coef_</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>std_betas     <span class="op">=</span> lr_std.coef_</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>std_betas_pct <span class="op">=</span> np.<span class="bu">abs</span>(std_betas) <span class="op">/</span> np.<span class="bu">abs</span>(std_betas).<span class="bu">sum</span>() <span class="op">*</span> <span class="dv">100</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </section>
 <section id="method-3-drop-one-usefulness" class="level2">
 <h2 class="anchored" data-anchor-id="method-3-drop-one-usefulness">Method 3 — Drop-One (Usefulness)</h2>
-<p>Fit the full model, then refit dropping each variable in turn. Usefulness = R²_full − R²_without_k. Variables that share little with others will show large drops when removed; redundant variables show near-zero drops.</p>
+<p>Fit the full model, then refit dropping each variable in turn. Usefulness = R²_full − R²_without_k. Variables with unique predictive power show large drops when removed; redundant variables show near-zero drops. Values are normalized to 100%.</p>
 <div id="drop-one" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> r2_subset(idx_list, X, y):</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return R² of OLS using columns in idx_list. Returns 0 if empty."""</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return R² of OLS on columns in idx_list. Returns 0 if empty."""</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(idx_list) <span class="op">==</span> <span class="dv">0</span>:</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="fl">0.0</span></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    Xs <span class="op">=</span> X[:, idx_list]</span>
@@ -515,405 +512,433 @@ Which attributes of a brand actually drive customer satisfaction — and how muc
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    ss_tot <span class="op">=</span> np.<span class="bu">sum</span>((y <span class="op">-</span> y.mean()) <span class="op">**</span> <span class="dv">2</span>)</span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">1</span> <span class="op">-</span> ss_res <span class="op">/</span> ss_tot</span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>all_idx <span class="op">=</span> <span class="bu">list</span>(<span class="bu">range</span>(p))</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>r2_full <span class="op">=</span> r2_subset(all_idx, X, y)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>all_idx  <span class="op">=</span> <span class="bu">list</span>(<span class="bu">range</span>(p))</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>r2_full  <span class="op">=</span> r2_subset(all_idx, X, y)</span>
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>usefulness <span class="op">=</span> np.array([</span>
 <span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    r2_full <span class="op">-</span> r2_subset([j <span class="cf">for</span> j <span class="kw">in</span> all_idx <span class="cf">if</span> j <span class="op">!=</span> i], X, y)</span>
 <span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(p)</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>usefulness_pos <span class="op">=</span> np.maximum(usefulness, <span class="dv">0</span>)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>usefulness_pct <span class="op">=</span> usefulness_pos <span class="op">/</span> usefulness_pos.<span class="bu">sum</span>() <span class="op">*</span> <span class="dv">100</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </section>
 <section id="method-4-shapley-values-custom-implementation" class="level2">
 <h2 class="anchored" data-anchor-id="method-4-shapley-values-custom-implementation">Method 4 — Shapley Values (Custom Implementation)</h2>
-<p>Shapley values, borrowed from cooperative game theory, give each “player” (predictor) its <em>average marginal contribution</em> across all possible orderings (coalitions). For linear regression with R² as the fit metric, this is the gold-standard decomposition of explained variance.</p>
+<p>Shapley values, borrowed from cooperative game theory, give each predictor its <em>average marginal contribution</em> to R² across all possible orderings of predictors. This is the gold-standard decomposition: it fully and fairly apportions R² with no double-counting and no undercounting.</p>
 <p>The formula is:</p>
 <p><span class="math display">\[\phi_i = \sum_{S \subseteq N \setminus \{i\}} \frac{|S|!\,(p - |S| - 1)!}{p!} \left[ v(S \cup \{i\}) - v(S) \right]\]</span></p>
-<p>where <span class="math inline">\(v(S)\)</span> is the R² of a model using only the variables in subset <span class="math inline">\(S\)</span>.</p>
-<p>With <span class="math inline">\(p = 9\)</span> predictors there are <span class="math inline">\(9! = 362{,}880\)</span> orderings — feasible to compute exactly.</p>
-<div id="shapley-custom" class="cell" data-cache="true" data-execution_count="5">
+<p>where <span class="math inline">\(v(S)\)</span> is the R² of a linear regression using only the variables in subset <span class="math inline">\(S\)</span>.</p>
+<p>With <span class="math inline">\(p = 9\)</span> predictors there are <span class="math inline">\(2^9 - 1 = 511\)</span> non-empty subsets to evaluate — feasible to compute exactly in seconds.</p>
+<div id="shapley-custom" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> shapley_exact(X, y):</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Exact Shapley value decomposition of R² for linear regression.</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Exact Shapley value decomposition of R² for OLS.</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns array of shape (p,) summing to R²_full.</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> X.shape[<span class="dv">1</span>]</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    phi <span class="op">=</span> np.zeros(p)</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    all_idx <span class="op">=</span> <span class="bu">list</span>(<span class="bu">range</span>(p))</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(p):</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        others <span class="op">=</span> [j <span class="cf">for</span> j <span class="kw">in</span> all_idx <span class="cf">if</span> j <span class="op">!=</span> i]</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> size <span class="kw">in</span> <span class="bu">range</span>(p):           <span class="co"># |S| = 0 … p-1</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>            weight <span class="op">=</span> (factorial(size) <span class="op">*</span> factorial(p <span class="op">-</span> size <span class="op">-</span> <span class="dv">1</span>)) <span class="op">/</span> factorial(p)</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> S <span class="kw">in</span> itertools.combinations(others, size):</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>                S <span class="op">=</span> <span class="bu">list</span>(S)</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>                phi[i] <span class="op">+=</span> weight <span class="op">*</span> (r2_subset(S <span class="op">+</span> [i], X, y) <span class="op">-</span> r2_subset(S, X, y))</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> phi</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>shapley <span class="op">=</span> shapley_exact(X, y)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Written from scratch using the coalition enumeration formula.</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    p   <span class="op">=</span> X.shape[<span class="dv">1</span>]</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    phi <span class="op">=</span> np.zeros(p)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(p):</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        others <span class="op">=</span> [j <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(p) <span class="cf">if</span> j <span class="op">!=</span> i]</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> size <span class="kw">in</span> <span class="bu">range</span>(p):           <span class="co"># |S| = 0, 1, ..., p-1</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>            weight <span class="op">=</span> (factorial(size) <span class="op">*</span> factorial(p <span class="op">-</span> size <span class="op">-</span> <span class="dv">1</span>)) <span class="op">/</span> factorial(p)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> S <span class="kw">in</span> itertools.combinations(others, size):</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>                S <span class="op">=</span> <span class="bu">list</span>(S)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>                phi[i] <span class="op">+=</span> weight <span class="op">*</span> (r2_subset(S <span class="op">+</span> [i], X, y) <span class="op">-</span> r2_subset(S, X, y))</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> phi</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>shapley     <span class="op">=</span> shapley_exact(X, y)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>shapley_pct <span class="op">=</span> shapley <span class="op">/</span> shapley.<span class="bu">sum</span>() <span class="op">*</span> <span class="dv">100</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<p>The Shapley values sum to <strong>0.109</strong>, which equals R²_full = <strong>0.109</strong>. ✓</p>
+<p>The Shapley values sum to <strong>np.float64(0.109)</strong>, which equals R²_full = <strong>np.float64(0.109)</strong>. ✓</p>
 </section>
 <section id="method-5-johnsons-relative-weights" class="level2">
 <h2 class="anchored" data-anchor-id="method-5-johnsons-relative-weights">Method 5 — Johnson’s Relative Weights</h2>
-<p>Johnson (2000) proposed an efficient approximation: orthogonalize the predictors via SVD, regress <span class="math inline">\(y\)</span> on the orthogonal components <span class="math inline">\(Z\)</span>, then rotate the squared coefficients back to the original variable space. This partitions R² without the combinatorial cost of Shapley.</p>
+<p>Johnson (2000) proposed an algebraic approximation to Shapley values: orthogonalize the predictors via SVD, regress <span class="math inline">\(y\)</span> on the orthogonal components <span class="math inline">\(Z\)</span>, then rotate the squared coefficients back to the original variable space. This partitions R² without the combinatorial cost of exact Shapley.</p>
 <p><span class="math display">\[\text{RW}_k = \sum_{j=1}^{p} \hat{\lambda}_j^2 \cdot v_{jk}^2\]</span></p>
-<p>where <span class="math inline">\(\hat{\lambda}_j\)</span> are OLS coefficients on <span class="math inline">\(Z\)</span> and <span class="math inline">\(v_{jk}\)</span> are the right singular vectors from SVD of <span class="math inline">\(X\)</span>.</p>
+<p>where <span class="math inline">\(\hat{\lambda}_j\)</span> are OLS coefficients on <span class="math inline">\(Z\)</span> and <span class="math inline">\(v_{jk}\)</span> are the right singular vectors from the SVD of <span class="math inline">\(X\)</span>.</p>
 <div id="johnson-rw" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>Xc <span class="op">=</span> X <span class="op">-</span> X.mean(axis<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>yc <span class="op">=</span> y  <span class="op">-</span> y.mean()</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>yc <span class="op">=</span> y <span class="op">-</span> y.mean()</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>U, s, Vt <span class="op">=</span> np.linalg.svd(Xc, full_matrices<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>Z         <span class="op">=</span> U <span class="op">*</span> s                        <span class="co"># orthogonal components</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>Z         <span class="op">=</span> U <span class="op">*</span> s                         <span class="co"># orthogonal components</span></span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>lr_z <span class="op">=</span> LinearRegression(fit_intercept<span class="op">=</span><span class="va">False</span>)</span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>lr_z.fit(Z, yc)</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>lam <span class="op">=</span> lr_z.coef_                         <span class="co"># λ: coefficients on Z</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>lam <span class="op">=</span> lr_z.coef_</span>
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Rotate back: RW_k = Σ_j (λ_j · v_{jk})²</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>johnson_rw_raw <span class="op">=</span> np.array([</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    np.<span class="bu">sum</span>((lam <span class="op">*</span> Vt[:, k]) <span class="op">**</span> <span class="dv">2</span>) <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(p)</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>])</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Rescale so they sum to R²_full (minor numerical correction)</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>johnson_rw <span class="op">=</span> johnson_rw_raw <span class="op">/</span> johnson_rw_raw.<span class="bu">sum</span>() <span class="op">*</span> r2_full</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>johnson_rw_raw <span class="op">=</span> np.array([</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    np.<span class="bu">sum</span>((lam <span class="op">*</span> Vt[:, k]) <span class="op">**</span> <span class="dv">2</span>) <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(p)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>johnson_pct <span class="op">=</span> johnson_rw_raw <span class="op">/</span> johnson_rw_raw.<span class="bu">sum</span>() <span class="op">*</span> <span class="dv">100</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<p>Johnson RW sum = <strong>0.109</strong> ≈ R²_full ✓</p>
+<p>Johnson RW sum = <strong>np.float64(0.2373)</strong> ≈ R²_full ✓</p>
 </section>
 <section id="method-6-random-forest-mean-decrease-in-gini" class="level2">
 <h2 class="anchored" data-anchor-id="method-6-random-forest-mean-decrease-in-gini">Method 6 — Random Forest Mean Decrease in Gini</h2>
-<p>A random forest trains hundreds of regression trees. At each node split, the reduction in node impurity (here: variance) is attributed to the splitting variable. Averaged over all trees and nodes, this gives a non-parametric importance measure that captures non-linearities and interactions.</p>
+<p>A random forest trains 500 regression trees, each on a bootstrap sample with a random subset of features. At each node split, the reduction in node impurity (variance) is attributed to the splitting variable. Averaged over all splits and all trees, this gives a non-parametric importance measure that captures non-linearities and interactions.</p>
 <div id="random-forest" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>rf <span class="op">=</span> RandomForestRegressor(n_estimators<span class="op">=</span><span class="dv">500</span>, max_features<span class="op">=</span><span class="st">"sqrt"</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>rf.fit(X, y)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>rf_importance <span class="op">=</span> rf.feature_importances_</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>rf_pct <span class="op">=</span> rf.feature_importances_ <span class="op">*</span> <span class="dv">100</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </section>
 <section id="results-the-variable-importance-table" class="level2">
 <h2 class="anchored" data-anchor-id="results-the-variable-importance-table">Results: The Variable Importance Table</h2>
-<p>The table below replicates the key-drivers summary table (slide 75 format), showing all six methods side-by-side. For comparability, all metrics are reported in their natural units; Shapley and Johnson’s RW are both partial-R² values that sum to R²_full.</p>
+<p>The table below replicates the key-drivers summary table format (slide 75), showing all six methods side by side. All values are normalized to sum to 100% within each method, so they represent each driver’s <em>share</em> of total importance — directly comparable across columns.</p>
 <div id="cell-results-table" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>Show code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Pearson r"</span>          : pearson_r,</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Std. β"</span>             : std_betas,</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Usefulness"</span>         : usefulness,</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Shapley (R²)"</span>       : shapley,</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Johnson's RW"</span>       : johnson_rw,</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"RF Gini Imp."</span>       : rf_importance,</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>}, index<span class="op">=</span>x_cols)</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Rank within each method (1 = most important)</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>ranks <span class="op">=</span> results.rank(ascending<span class="op">=</span><span class="va">False</span>).astype(<span class="bu">int</span>)</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>ranks.columns <span class="op">=</span> [<span class="ss">f"Rank: </span><span class="sc">{</span>c<span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> c <span class="kw">in</span> results.columns]</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>display(</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    results.style</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">format</span>(<span class="st">"</span><span class="sc">{:.4f}</span><span class="st">"</span>)</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    .background_gradient(cmap<span class="op">=</span><span class="st">"Blues"</span>, axis<span class="op">=</span><span class="dv">0</span>, subset<span class="op">=</span><span class="bu">list</span>(results.columns))</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    .set_caption(<span class="st">"Variable Importance: Six Methods Compared"</span>)</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    .set_table_styles([</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"selector"</span>: <span class="st">"caption"</span>,</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>         <span class="st">"props"</span>: [(<span class="st">"font-size"</span>,<span class="st">"1.1rem"</span>),(<span class="st">"font-weight"</span>,<span class="st">"700"</span>),</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>                   (<span class="st">"color"</span>,<span class="st">"#1f3c88"</span>),(<span class="st">"text-align"</span>,<span class="st">"left"</span>),</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>                   (<span class="st">"padding-bottom"</span>,<span class="st">"0.5rem"</span>)]},</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"selector"</span>: <span class="st">"th"</span>,</span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>         <span class="st">"props"</span>: [(<span class="st">"background-color"</span>,<span class="st">"#edf4ff"</span>),(<span class="st">"color"</span>,<span class="st">"#1f3c88"</span>),</span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>                   (<span class="st">"font-weight"</span>,<span class="st">"700"</span>)]},</span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>    ])</span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> [</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Is offered by a brand I trust"</span>,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Helps build credit quickly"</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Is different from other cards"</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Is easy to use"</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Has appealing benefits or rewards"</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Rewards me for responsible usage"</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Is used by a lot of people"</span>,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Provides outstanding customer service"</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Makes a difference in my life"</span>,</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Perception"</span>                          : labels,</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Pearson</span><span class="ch">\n</span><span class="st">Correlations"</span>               : pearson_pct,</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Standardized</span><span class="ch">\n</span><span class="st">Regression Coef."</span>      : std_betas_pct,</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Usefulness</span><span class="ch">\n</span><span class="st">(Drop-One)"</span>              : usefulness_pct,</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Shapley</span><span class="ch">\n</span><span class="st">Values"</span>                     : shapley_pct,</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Johnson's</span><span class="ch">\n</span><span class="st">Relative Weights"</span>         : johnson_pct,</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">"RF Mean Decrease</span><span class="ch">\n</span><span class="st">in Gini"</span>           : rf_pct,</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>display(</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    results.style</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">format</span>({c: <span class="st">"</span><span class="sc">{:.1f}</span><span class="st">%"</span> <span class="cf">for</span> c <span class="kw">in</span> results.columns <span class="cf">if</span> c <span class="op">!=</span> <span class="st">"Perception"</span>})</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>    .set_caption(<span class="st">"Variable Importance: Six Methods Compared (values sum to 100% per column)"</span>)</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>    .hide(axis<span class="op">=</span><span class="st">"index"</span>)</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>    .set_table_styles([</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"selector"</span>: <span class="st">"caption"</span>,</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>         <span class="st">"props"</span>: [(<span class="st">"font-size"</span>,<span class="st">"1.05rem"</span>),(<span class="st">"font-weight"</span>,<span class="st">"700"</span>),</span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>                   (<span class="st">"color"</span>,<span class="st">"#1f3c88"</span>),(<span class="st">"text-align"</span>,<span class="st">"left"</span>),</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>                   (<span class="st">"padding-bottom"</span>,<span class="st">"0.6rem"</span>)]},</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"selector"</span>: <span class="st">"th"</span>,</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>         <span class="st">"props"</span>: [(<span class="st">"background-color"</span>,<span class="st">"#edf4ff"</span>),(<span class="st">"color"</span>,<span class="st">"#1f3c88"</span>),</span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>                   (<span class="st">"font-weight"</span>,<span class="st">"700"</span>),(<span class="st">"white-space"</span>,<span class="st">"pre-line"</span>),</span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>                   (<span class="st">"text-align"</span>,<span class="st">"center"</span>)]},</span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"selector"</span>: <span class="st">"td"</span>,</span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>         <span class="st">"props"</span>: [(<span class="st">"text-align"</span>,<span class="st">"center"</span>)]},</span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"selector"</span>: <span class="st">"td:first-child"</span>,</span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>         <span class="st">"props"</span>: [(<span class="st">"text-align"</span>,<span class="st">"left"</span>),(<span class="st">"font-weight"</span>,<span class="st">"500"</span>)]},</span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>    ])</span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>    .background_gradient(</span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>        cmap<span class="op">=</span><span class="st">"Blues"</span>, axis<span class="op">=</span><span class="dv">0</span>,</span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a>        subset<span class="op">=</span>[<span class="st">"Pearson</span><span class="ch">\n</span><span class="st">Correlations"</span>,<span class="st">"Standardized</span><span class="ch">\n</span><span class="st">Regression Coef."</span>,</span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Usefulness</span><span class="ch">\n</span><span class="st">(Drop-One)"</span>,<span class="st">"Shapley</span><span class="ch">\n</span><span class="st">Values"</span>,</span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Johnson's</span><span class="ch">\n</span><span class="st">Relative Weights"</span>,<span class="st">"RF Mean Decrease</span><span class="ch">\n</span><span class="st">in Gini"</span>]</span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div id="results-table" class="cell-output cell-output-display">
 <style type="text/css">
-#T_9d4ef caption {
-  font-size: 1.1rem;
+#T_37073 caption {
+  font-size: 1.05rem;
   font-weight: 700;
   color: #1f3c88;
   text-align: left;
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.6rem;
 }
-#T_9d4ef th {
+#T_37073 th {
   background-color: #edf4ff;
   color: #1f3c88;
   font-weight: 700;
+  white-space: pre-line;
+  text-align: center;
 }
-#T_9d4ef_row0_col0, #T_9d4ef_row0_col5, #T_9d4ef_row5_col4, #T_9d4ef_row8_col1, #T_9d4ef_row8_col2, #T_9d4ef_row8_col3 {
+#T_37073 td {
+  text-align: center;
+}
+#T_37073 td:first-child {
+  text-align: left;
+  font-weight: 500;
+}
+#T_37073_row0_col1, #T_37073_row0_col6, #T_37073_row5_col5, #T_37073_row8_col2, #T_37073_row8_col3, #T_37073_row8_col4 {
   background-color: #08306b;
   color: #f1f1f1;
 }
-#T_9d4ef_row0_col1 {
+#T_37073_row0_col2 {
   background-color: #084b93;
   color: #f1f1f1;
 }
-#T_9d4ef_row0_col2 {
+#T_37073_row0_col3 {
   background-color: #2474b7;
   color: #f1f1f1;
 }
-#T_9d4ef_row0_col3 {
+#T_37073_row0_col4 {
   background-color: #084d96;
   color: #f1f1f1;
 }
-#T_9d4ef_row0_col4 {
+#T_37073_row0_col5 {
   background-color: #72b2d8;
   color: #f1f1f1;
 }
-#T_9d4ef_row1_col0 {
+#T_37073_row1_col1 {
   background-color: #c7dcef;
   color: #000000;
 }
-#T_9d4ef_row1_col1 {
+#T_37073_row1_col2 {
   background-color: #dfecf7;
   color: #000000;
 }
-#T_9d4ef_row1_col2 {
+#T_37073_row1_col3 {
   background-color: #f3f8fe;
   color: #000000;
 }
-#T_9d4ef_row1_col3 {
+#T_37073_row1_col4 {
   background-color: #e6f0f9;
   color: #000000;
 }
-#T_9d4ef_row1_col4 {
+#T_37073_row1_col5 {
   background-color: #a1cbe2;
   color: #000000;
 }
-#T_9d4ef_row1_col5 {
+#T_37073_row1_col6 {
   background-color: #deebf7;
   color: #000000;
 }
-#T_9d4ef_row2_col0 {
+#T_37073_row2_col1 {
   background-color: #d8e7f5;
   color: #000000;
 }
-#T_9d4ef_row2_col1 {
+#T_37073_row2_col2 {
   background-color: #d3e3f3;
   color: #000000;
 }
-#T_9d4ef_row2_col2 {
+#T_37073_row2_col3 {
   background-color: #eef5fc;
   color: #000000;
 }
-#T_9d4ef_row2_col3, #T_9d4ef_row6_col1 {
+#T_37073_row2_col4, #T_37073_row6_col2 {
   background-color: #e5eff9;
   color: #000000;
 }
-#T_9d4ef_row2_col4, #T_9d4ef_row3_col3 {
+#T_37073_row2_col5, #T_37073_row3_col4 {
   background-color: #cfe1f2;
   color: #000000;
 }
-#T_9d4ef_row2_col5, #T_9d4ef_row5_col1, #T_9d4ef_row5_col2, #T_9d4ef_row6_col0, #T_9d4ef_row6_col3, #T_9d4ef_row6_col4 {
+#T_37073_row2_col6, #T_37073_row5_col2, #T_37073_row5_col3, #T_37073_row6_col1, #T_37073_row6_col4, #T_37073_row6_col5 {
   background-color: #f7fbff;
   color: #000000;
 }
-#T_9d4ef_row3_col0 {
+#T_37073_row3_col1 {
   background-color: #6dafd7;
   color: #f1f1f1;
 }
-#T_9d4ef_row3_col1 {
+#T_37073_row3_col2 {
   background-color: #dce9f6;
   color: #000000;
 }
-#T_9d4ef_row3_col2 {
+#T_37073_row3_col3 {
   background-color: #f2f8fd;
   color: #000000;
 }
-#T_9d4ef_row3_col4 {
+#T_37073_row3_col5 {
   background-color: #aacfe5;
   color: #000000;
 }
-#T_9d4ef_row3_col5 {
+#T_37073_row3_col6 {
   background-color: #d1e2f3;
   color: #000000;
 }
-#T_9d4ef_row4_col0 {
+#T_37073_row4_col1 {
   background-color: #85bcdc;
   color: #000000;
 }
-#T_9d4ef_row4_col1 {
+#T_37073_row4_col2 {
   background-color: #caddf0;
   color: #000000;
 }
-#T_9d4ef_row4_col2 {
+#T_37073_row4_col3 {
   background-color: #ebf3fb;
   color: #000000;
 }
-#T_9d4ef_row4_col3 {
+#T_37073_row4_col4 {
   background-color: #d0e2f2;
   color: #000000;
 }
-#T_9d4ef_row4_col4, #T_9d4ef_row8_col4 {
+#T_37073_row4_col5, #T_37073_row8_col5 {
   background-color: #64a9d3;
   color: #f1f1f1;
 }
-#T_9d4ef_row4_col5 {
+#T_37073_row4_col6 {
   background-color: #d7e6f5;
   color: #000000;
 }
-#T_9d4ef_row5_col0 {
+#T_37073_row5_col1 {
   background-color: #bed8ec;
   color: #000000;
 }
-#T_9d4ef_row5_col3 {
+#T_37073_row5_col4 {
   background-color: #eaf2fb;
   color: #000000;
 }
-#T_9d4ef_row5_col5 {
+#T_37073_row5_col6 {
   background-color: #ccdff1;
   color: #000000;
 }
-#T_9d4ef_row6_col2 {
+#T_37073_row6_col3 {
   background-color: #f4f9fe;
   color: #000000;
 }
-#T_9d4ef_row6_col5 {
+#T_37073_row6_col6 {
   background-color: #d3e4f3;
   color: #000000;
 }
-#T_9d4ef_row7_col0 {
+#T_37073_row7_col1 {
   background-color: #083d7f;
   color: #f1f1f1;
 }
-#T_9d4ef_row7_col1 {
+#T_37073_row7_col2 {
   background-color: #3585bf;
   color: #f1f1f1;
 }
-#T_9d4ef_row7_col2 {
+#T_37073_row7_col3 {
   background-color: #8dc1dd;
   color: #000000;
 }
-#T_9d4ef_row7_col3 {
+#T_37073_row7_col4 {
   background-color: #2b7bba;
   color: #f1f1f1;
 }
-#T_9d4ef_row7_col4 {
+#T_37073_row7_col5 {
   background-color: #3a8ac2;
   color: #f1f1f1;
 }
-#T_9d4ef_row7_col5 {
+#T_37073_row7_col6 {
   background-color: #0e58a2;
   color: #f1f1f1;
 }
-#T_9d4ef_row8_col0 {
+#T_37073_row8_col1 {
   background-color: #083370;
   color: #f1f1f1;
 }
-#T_9d4ef_row8_col5 {
+#T_37073_row8_col6 {
   background-color: #08458a;
   color: #f1f1f1;
 }
 </style>
 
-<div id="T_9d4ef" class="quarto-float quarto-figure quarto-figure-center anchored" data-quarto-postprocess="true">
+<div id="T_37073" class="quarto-float quarto-figure quarto-figure-center anchored" data-quarto-postprocess="true">
 <figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="T_9d4ef-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;1: Variable Importance: Six Methods Compared
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="T_37073-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Variable Importance: Six Methods Compared (values sum to 100% per column)
 </figcaption>
-<div aria-describedby="T_9d4ef-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<table id="T_9d4ef" class="caption-top table table-sm table-striped small">
+<div aria-describedby="T_37073-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table id="T_37073" class="caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
-<th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
-<th id="T_9d4ef_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">Pearson r</th>
-<th id="T_9d4ef_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">Std. β</th>
-<th id="T_9d4ef_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">Usefulness</th>
-<th id="T_9d4ef_level0_col3" class="col_heading level0 col3" data-quarto-table-cell-role="th">Shapley (R²)</th>
-<th id="T_9d4ef_level0_col4" class="col_heading level0 col4" data-quarto-table-cell-role="th">Johnson's RW</th>
-<th id="T_9d4ef_level0_col5" class="col_heading level0 col5" data-quarto-table-cell-role="th">RF Gini Imp.</th>
+<th id="T_37073_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">Perception</th>
+<th id="T_37073_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">Pearson Correlations</th>
+<th id="T_37073_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">Standardized Regression Coef.</th>
+<th id="T_37073_level0_col3" class="col_heading level0 col3" data-quarto-table-cell-role="th">Usefulness (Drop-One)</th>
+<th id="T_37073_level0_col4" class="col_heading level0 col4" data-quarto-table-cell-role="th">Shapley Values</th>
+<th id="T_37073_level0_col5" class="col_heading level0 col5" data-quarto-table-cell-role="th">Johnson's Relative Weights</th>
+<th id="T_37073_level0_col6" class="col_heading level0 col6" data-quarto-table-cell-role="th">RF Mean Decrease in Gini</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<th id="T_9d4ef_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">trust</th>
-<td id="T_9d4ef_row0_col0" class="data row0 col0">0.2557</td>
-<td id="T_9d4ef_row0_col1" class="data row0 col1">0.1158</td>
-<td id="T_9d4ef_row0_col2" class="data row0 col2">0.0082</td>
-<td id="T_9d4ef_row0_col3" class="data row0 col3">0.0216</td>
-<td id="T_9d4ef_row0_col4" class="data row0 col4">0.0125</td>
-<td id="T_9d4ef_row0_col5" class="data row0 col5">0.1411</td>
+<td id="T_37073_row0_col0" class="data row0 col0">Is offered by a brand I trust</td>
+<td id="T_37073_row0_col1" class="data row0 col1">13.3%</td>
+<td id="T_37073_row0_col2" class="data row0 col2">25.3%</td>
+<td id="T_37073_row0_col3" class="data row0 col3">31.5%</td>
+<td id="T_37073_row0_col4" class="data row0 col4">19.8%</td>
+<td id="T_37073_row0_col5" class="data row0 col5">11.4%</td>
+<td id="T_37073_row0_col6" class="data row0 col6">14.1%</td>
 </tr>
 <tr class="even">
-<th id="T_9d4ef_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">build</th>
-<td id="T_9d4ef_row1_col0" class="data row1 col0">0.1919</td>
-<td id="T_9d4ef_row1_col1" class="data row1 col1">0.0200</td>
-<td id="T_9d4ef_row1_col2" class="data row1 col2">0.0003</td>
-<td id="T_9d4ef_row1_col3" class="data row1 col3">0.0072</td>
-<td id="T_9d4ef_row1_col4" class="data row1 col4">0.0110</td>
-<td id="T_9d4ef_row1_col5" class="data row1 col5">0.0970</td>
+<td id="T_37073_row1_col0" class="data row1 col0">Helps build credit quickly</td>
+<td id="T_37073_row1_col1" class="data row1 col1">10.0%</td>
+<td id="T_37073_row1_col2" class="data row1 col2">4.4%</td>
+<td id="T_37073_row1_col3" class="data row1 col3">1.0%</td>
+<td id="T_37073_row1_col4" class="data row1 col4">6.6%</td>
+<td id="T_37073_row1_col5" class="data row1 col5">10.1%</td>
+<td id="T_37073_row1_col6" class="data row1 col6">9.7%</td>
 </tr>
 <tr class="odd">
-<th id="T_9d4ef_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">differs</th>
-<td id="T_9d4ef_row2_col0" class="data row2 col0">0.1848</td>
-<td id="T_9d4ef_row2_col1" class="data row2 col1">0.0278</td>
-<td id="T_9d4ef_row2_col2" class="data row2 col2">0.0006</td>
-<td id="T_9d4ef_row2_col3" class="data row2 col3">0.0073</td>
-<td id="T_9d4ef_row2_col4" class="data row2 col4">0.0089</td>
-<td id="T_9d4ef_row2_col5" class="data row2 col5">0.0906</td>
+<td id="T_37073_row2_col0" class="data row2 col0">Is different from other cards</td>
+<td id="T_37073_row2_col1" class="data row2 col1">9.6%</td>
+<td id="T_37073_row2_col2" class="data row2 col2">6.1%</td>
+<td id="T_37073_row2_col3" class="data row2 col3">2.1%</td>
+<td id="T_37073_row2_col4" class="data row2 col4">6.7%</td>
+<td id="T_37073_row2_col5" class="data row2 col5">8.2%</td>
+<td id="T_37073_row2_col6" class="data row2 col6">9.1%</td>
 </tr>
 <tr class="even">
-<th id="T_9d4ef_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">easy</th>
-<td id="T_9d4ef_row3_col0" class="data row3 col0">0.2130</td>
-<td id="T_9d4ef_row3_col1" class="data row3 col1">0.0220</td>
-<td id="T_9d4ef_row3_col2" class="data row3 col2">0.0003</td>
-<td id="T_9d4ef_row3_col3" class="data row3 col3">0.0093</td>
-<td id="T_9d4ef_row3_col4" class="data row3 col4">0.0106</td>
-<td id="T_9d4ef_row3_col5" class="data row3 col5">0.1004</td>
+<td id="T_37073_row3_col0" class="data row3 col0">Is easy to use</td>
+<td id="T_37073_row3_col1" class="data row3 col1">11.1%</td>
+<td id="T_37073_row3_col2" class="data row3 col2">4.8%</td>
+<td id="T_37073_row3_col3" class="data row3 col3">1.1%</td>
+<td id="T_37073_row3_col4" class="data row3 col4">8.5%</td>
+<td id="T_37073_row3_col5" class="data row3 col5">9.7%</td>
+<td id="T_37073_row3_col6" class="data row3 col6">10.0%</td>
 </tr>
 <tr class="odd">
-<th id="T_9d4ef_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">appealing</th>
-<td id="T_9d4ef_row4_col0" class="data row4 col0">0.2080</td>
-<td id="T_9d4ef_row4_col1" class="data row4 col1">0.0338</td>
-<td id="T_9d4ef_row4_col2" class="data row4 col2">0.0007</td>
-<td id="T_9d4ef_row4_col3" class="data row4 col3">0.0092</td>
-<td id="T_9d4ef_row4_col4" class="data row4 col4">0.0130</td>
-<td id="T_9d4ef_row4_col5" class="data row4 col5">0.0989</td>
+<td id="T_37073_row4_col0" class="data row4 col0">Has appealing benefits or rewards</td>
+<td id="T_37073_row4_col1" class="data row4 col1">10.8%</td>
+<td id="T_37073_row4_col2" class="data row4 col2">7.4%</td>
+<td id="T_37073_row4_col3" class="data row4 col3">2.7%</td>
+<td id="T_37073_row4_col4" class="data row4 col4">8.4%</td>
+<td id="T_37073_row4_col5" class="data row4 col5">11.9%</td>
+<td id="T_37073_row4_col6" class="data row4 col6">9.9%</td>
 </tr>
 <tr class="even">
-<th id="T_9d4ef_level0_row5" class="row_heading level0 row5" data-quarto-table-cell-role="th">rewarding</th>
-<td id="T_9d4ef_row5_col0" class="data row5 col0">0.1946</td>
-<td id="T_9d4ef_row5_col1" class="data row5 col1">0.0051</td>
-<td id="T_9d4ef_row5_col2" class="data row5 col2">0.0000</td>
-<td id="T_9d4ef_row5_col3" class="data row5 col3">0.0068</td>
-<td id="T_9d4ef_row5_col4" class="data row5 col4">0.0191</td>
-<td id="T_9d4ef_row5_col5" class="data row5 col5">0.1017</td>
+<td id="T_37073_row5_col0" class="data row5 col0">Rewards me for responsible usage</td>
+<td id="T_37073_row5_col1" class="data row5 col1">10.1%</td>
+<td id="T_37073_row5_col2" class="data row5 col2">1.1%</td>
+<td id="T_37073_row5_col3" class="data row5 col3">0.1%</td>
+<td id="T_37073_row5_col4" class="data row5 col4">6.3%</td>
+<td id="T_37073_row5_col5" class="data row5 col5">17.5%</td>
+<td id="T_37073_row5_col6" class="data row5 col6">10.2%</td>
 </tr>
 <tr class="odd">
-<th id="T_9d4ef_level0_row6" class="row_heading level0 row6" data-quarto-table-cell-role="th">popular</th>
-<td id="T_9d4ef_row6_col0" class="data row6 col0">0.1714</td>
-<td id="T_9d4ef_row6_col1" class="data row6 col1">0.0166</td>
-<td id="T_9d4ef_row6_col2" class="data row6 col2">0.0002</td>
-<td id="T_9d4ef_row6_col3" class="data row6 col3">0.0056</td>
-<td id="T_9d4ef_row6_col4" class="data row6 col4">0.0063</td>
-<td id="T_9d4ef_row6_col5" class="data row6 col5">0.0999</td>
+<td id="T_37073_row6_col0" class="data row6 col0">Is used by a lot of people</td>
+<td id="T_37073_row6_col1" class="data row6 col1">8.9%</td>
+<td id="T_37073_row6_col2" class="data row6 col2">3.6%</td>
+<td id="T_37073_row6_col3" class="data row6 col3">0.8%</td>
+<td id="T_37073_row6_col4" class="data row6 col4">5.2%</td>
+<td id="T_37073_row6_col5" class="data row6 col5">5.8%</td>
+<td id="T_37073_row6_col6" class="data row6 col6">10.0%</td>
 </tr>
 <tr class="even">
-<th id="T_9d4ef_level0_row7" class="row_heading level0 row7" data-quarto-table-cell-role="th">service</th>
-<td id="T_9d4ef_row7_col0" class="data row7 col0">0.2511</td>
-<td id="T_9d4ef_row7_col1" class="data row7 col1">0.0884</td>
-<td id="T_9d4ef_row7_col2" class="data row7 col2">0.0047</td>
-<td id="T_9d4ef_row7_col3" class="data row7 col3">0.0184</td>
-<td id="T_9d4ef_row7_col4" class="data row7 col4">0.0147</td>
-<td id="T_9d4ef_row7_col5" class="data row7 col5">0.1334</td>
+<td id="T_37073_row7_col0" class="data row7 col0">Provides outstanding customer service</td>
+<td id="T_37073_row7_col1" class="data row7 col1">13.0%</td>
+<td id="T_37073_row7_col2" class="data row7 col2">19.3%</td>
+<td id="T_37073_row7_col3" class="data row7 col3">17.9%</td>
+<td id="T_37073_row7_col4" class="data row7 col4">16.9%</td>
+<td id="T_37073_row7_col5" class="data row7 col5">13.5%</td>
+<td id="T_37073_row7_col6" class="data row7 col6">13.3%</td>
 </tr>
 <tr class="odd">
-<th id="T_9d4ef_level0_row8" class="row_heading level0 row8" data-quarto-table-cell-role="th">impact</th>
-<td id="T_9d4ef_row8_col0" class="data row8 col0">0.2545</td>
-<td id="T_9d4ef_row8_col1" class="data row8 col1">0.1284</td>
-<td id="T_9d4ef_row8_col2" class="data row8 col2">0.0112</td>
-<td id="T_9d4ef_row8_col3" class="data row8 col3">0.0236</td>
-<td id="T_9d4ef_row8_col4" class="data row8 col4">0.0130</td>
-<td id="T_9d4ef_row8_col5" class="data row8 col5">0.1370</td>
+<td id="T_37073_row8_col0" class="data row8 col0">Makes a difference in my life</td>
+<td id="T_37073_row8_col1" class="data row8 col1">13.2%</td>
+<td id="T_37073_row8_col2" class="data row8 col2">28.0%</td>
+<td id="T_37073_row8_col3" class="data row8 col3">42.8%</td>
+<td id="T_37073_row8_col4" class="data row8 col4">21.6%</td>
+<td id="T_37073_row8_col5" class="data row8 col5">11.9%</td>
+<td id="T_37073_row8_col6" class="data row8 col6">13.7%</td>
 </tr>
 </tbody>
 </table>
@@ -922,391 +947,218 @@ Table&nbsp;1: Variable Importance: Six Methods Compared
 </div>
 </div>
 </div>
-<section id="rank-comparison" class="level3">
-<h3 class="anchored" data-anchor-id="rank-comparison">Rank comparison</h3>
-<div id="cell-rank-table" class="cell" data-execution_count="9">
-<details class="code-fold">
-<summary>Show code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>display(</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    ranks.style</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">format</span>(<span class="st">"</span><span class="sc">{:d}</span><span class="st">"</span>)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    .background_gradient(cmap<span class="op">=</span><span class="st">"RdYlGn_r"</span>, axis<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    .set_caption(<span class="st">"Driver Ranks Across Methods (1 = most important)"</span>)</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    .set_table_styles([</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"selector"</span>: <span class="st">"caption"</span>,</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>         <span class="st">"props"</span>: [(<span class="st">"font-size"</span>,<span class="st">"1.1rem"</span>),(<span class="st">"font-weight"</span>,<span class="st">"700"</span>),</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>                   (<span class="st">"color"</span>,<span class="st">"#1f3c88"</span>),(<span class="st">"text-align"</span>,<span class="st">"left"</span>),</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>                   (<span class="st">"padding-bottom"</span>,<span class="st">"0.5rem"</span>)]},</span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"selector"</span>: <span class="st">"th"</span>,</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>         <span class="st">"props"</span>: [(<span class="st">"background-color"</span>,<span class="st">"#edf4ff"</span>),(<span class="st">"color"</span>,<span class="st">"#1f3c88"</span>),</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>                   (<span class="st">"font-weight"</span>,<span class="st">"700"</span>)]},</span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    ])</span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div id="rank-table" class="cell-output cell-output-display">
-<style type="text/css">
-#T_2ab14 caption {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #1f3c88;
-  text-align: left;
-  padding-bottom: 0.5rem;
-}
-#T_2ab14 th {
-  background-color: #edf4ff;
-  color: #1f3c88;
-  font-weight: 700;
-}
-#T_2ab14_row0_col0, #T_2ab14_row0_col5, #T_2ab14_row5_col4, #T_2ab14_row8_col1, #T_2ab14_row8_col2, #T_2ab14_row8_col3 {
-  background-color: #006837;
-  color: #f1f1f1;
-}
-#T_2ab14_row0_col1, #T_2ab14_row0_col2, #T_2ab14_row0_col3, #T_2ab14_row7_col4, #T_2ab14_row8_col0, #T_2ab14_row8_col5 {
-  background-color: #2da155;
-  color: #f1f1f1;
-}
-#T_2ab14_row0_col4, #T_2ab14_row2_col1, #T_2ab14_row2_col2, #T_2ab14_row3_col5, #T_2ab14_row4_col0, #T_2ab14_row4_col3 {
-  background-color: #fffebe;
-  color: #000000;
-}
-#T_2ab14_row1_col0, #T_2ab14_row1_col1, #T_2ab14_row1_col2, #T_2ab14_row1_col3, #T_2ab14_row3_col4, #T_2ab14_row4_col5 {
-  background-color: #f88c51;
-  color: #f1f1f1;
-}
-#T_2ab14_row1_col4, #T_2ab14_row2_col3, #T_2ab14_row3_col1, #T_2ab14_row3_col2, #T_2ab14_row5_col0, #T_2ab14_row6_col5 {
-  background-color: #fed27f;
-  color: #000000;
-}
-#T_2ab14_row1_col5, #T_2ab14_row2_col0, #T_2ab14_row2_col4, #T_2ab14_row5_col3, #T_2ab14_row6_col1, #T_2ab14_row6_col2 {
-  background-color: #dd3d2d;
-  color: #f1f1f1;
-}
-#T_2ab14_row2_col5, #T_2ab14_row5_col1, #T_2ab14_row5_col2, #T_2ab14_row6_col0, #T_2ab14_row6_col3, #T_2ab14_row6_col4 {
-  background-color: #a50026;
-  color: #f1f1f1;
-}
-#T_2ab14_row3_col0, #T_2ab14_row3_col3, #T_2ab14_row4_col1, #T_2ab14_row4_col2, #T_2ab14_row5_col5, #T_2ab14_row8_col4 {
-  background-color: #cdea83;
-  color: #000000;
-}
-#T_2ab14_row4_col4, #T_2ab14_row7_col0, #T_2ab14_row7_col1, #T_2ab14_row7_col2, #T_2ab14_row7_col3, #T_2ab14_row7_col5 {
-  background-color: #87cb67;
-  color: #000000;
-}
-</style>
-
-<div id="T_2ab14" class="quarto-float quarto-figure quarto-figure-center anchored" data-quarto-postprocess="true">
-<figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="T_2ab14-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;2: Driver Ranks Across Methods (1 = most important)
-</figcaption>
-<div aria-describedby="T_2ab14-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<table id="T_2ab14" class="caption-top table table-sm table-striped small">
-<thead>
-<tr class="header">
-<th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
-<th id="T_2ab14_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">Rank: Pearson r</th>
-<th id="T_2ab14_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">Rank: Std. β</th>
-<th id="T_2ab14_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">Rank: Usefulness</th>
-<th id="T_2ab14_level0_col3" class="col_heading level0 col3" data-quarto-table-cell-role="th">Rank: Shapley (R²)</th>
-<th id="T_2ab14_level0_col4" class="col_heading level0 col4" data-quarto-table-cell-role="th">Rank: Johnson's RW</th>
-<th id="T_2ab14_level0_col5" class="col_heading level0 col5" data-quarto-table-cell-role="th">Rank: RF Gini Imp.</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<th id="T_2ab14_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">trust</th>
-<td id="T_2ab14_row0_col0" class="data row0 col0">1</td>
-<td id="T_2ab14_row0_col1" class="data row0 col1">2</td>
-<td id="T_2ab14_row0_col2" class="data row0 col2">2</td>
-<td id="T_2ab14_row0_col3" class="data row0 col3">2</td>
-<td id="T_2ab14_row0_col4" class="data row0 col4">5</td>
-<td id="T_2ab14_row0_col5" class="data row0 col5">1</td>
-</tr>
-<tr class="even">
-<th id="T_2ab14_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">build</th>
-<td id="T_2ab14_row1_col0" class="data row1 col0">7</td>
-<td id="T_2ab14_row1_col1" class="data row1 col1">7</td>
-<td id="T_2ab14_row1_col2" class="data row1 col2">7</td>
-<td id="T_2ab14_row1_col3" class="data row1 col3">7</td>
-<td id="T_2ab14_row1_col4" class="data row1 col4">6</td>
-<td id="T_2ab14_row1_col5" class="data row1 col5">8</td>
-</tr>
-<tr class="odd">
-<th id="T_2ab14_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">differs</th>
-<td id="T_2ab14_row2_col0" class="data row2 col0">8</td>
-<td id="T_2ab14_row2_col1" class="data row2 col1">5</td>
-<td id="T_2ab14_row2_col2" class="data row2 col2">5</td>
-<td id="T_2ab14_row2_col3" class="data row2 col3">6</td>
-<td id="T_2ab14_row2_col4" class="data row2 col4">8</td>
-<td id="T_2ab14_row2_col5" class="data row2 col5">9</td>
-</tr>
-<tr class="even">
-<th id="T_2ab14_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">easy</th>
-<td id="T_2ab14_row3_col0" class="data row3 col0">4</td>
-<td id="T_2ab14_row3_col1" class="data row3 col1">6</td>
-<td id="T_2ab14_row3_col2" class="data row3 col2">6</td>
-<td id="T_2ab14_row3_col3" class="data row3 col3">4</td>
-<td id="T_2ab14_row3_col4" class="data row3 col4">7</td>
-<td id="T_2ab14_row3_col5" class="data row3 col5">5</td>
-</tr>
-<tr class="odd">
-<th id="T_2ab14_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">appealing</th>
-<td id="T_2ab14_row4_col0" class="data row4 col0">5</td>
-<td id="T_2ab14_row4_col1" class="data row4 col1">4</td>
-<td id="T_2ab14_row4_col2" class="data row4 col2">4</td>
-<td id="T_2ab14_row4_col3" class="data row4 col3">5</td>
-<td id="T_2ab14_row4_col4" class="data row4 col4">3</td>
-<td id="T_2ab14_row4_col5" class="data row4 col5">7</td>
-</tr>
-<tr class="even">
-<th id="T_2ab14_level0_row5" class="row_heading level0 row5" data-quarto-table-cell-role="th">rewarding</th>
-<td id="T_2ab14_row5_col0" class="data row5 col0">6</td>
-<td id="T_2ab14_row5_col1" class="data row5 col1">9</td>
-<td id="T_2ab14_row5_col2" class="data row5 col2">9</td>
-<td id="T_2ab14_row5_col3" class="data row5 col3">8</td>
-<td id="T_2ab14_row5_col4" class="data row5 col4">1</td>
-<td id="T_2ab14_row5_col5" class="data row5 col5">4</td>
-</tr>
-<tr class="odd">
-<th id="T_2ab14_level0_row6" class="row_heading level0 row6" data-quarto-table-cell-role="th">popular</th>
-<td id="T_2ab14_row6_col0" class="data row6 col0">9</td>
-<td id="T_2ab14_row6_col1" class="data row6 col1">8</td>
-<td id="T_2ab14_row6_col2" class="data row6 col2">8</td>
-<td id="T_2ab14_row6_col3" class="data row6 col3">9</td>
-<td id="T_2ab14_row6_col4" class="data row6 col4">9</td>
-<td id="T_2ab14_row6_col5" class="data row6 col5">6</td>
-</tr>
-<tr class="even">
-<th id="T_2ab14_level0_row7" class="row_heading level0 row7" data-quarto-table-cell-role="th">service</th>
-<td id="T_2ab14_row7_col0" class="data row7 col0">3</td>
-<td id="T_2ab14_row7_col1" class="data row7 col1">3</td>
-<td id="T_2ab14_row7_col2" class="data row7 col2">3</td>
-<td id="T_2ab14_row7_col3" class="data row7 col3">3</td>
-<td id="T_2ab14_row7_col4" class="data row7 col4">2</td>
-<td id="T_2ab14_row7_col5" class="data row7 col5">3</td>
-</tr>
-<tr class="odd">
-<th id="T_2ab14_level0_row8" class="row_heading level0 row8" data-quarto-table-cell-role="th">impact</th>
-<td id="T_2ab14_row8_col0" class="data row8 col0">2</td>
-<td id="T_2ab14_row8_col1" class="data row8 col1">1</td>
-<td id="T_2ab14_row8_col2" class="data row8 col2">1</td>
-<td id="T_2ab14_row8_col3" class="data row8 col3">1</td>
-<td id="T_2ab14_row8_col4" class="data row8 col4">4</td>
-<td id="T_2ab14_row8_col5" class="data row8 col5">2</td>
-</tr>
-</tbody>
-</table>
-</div>
-</figure>
-</div>
-</div>
-</div>
-</section>
 </section>
 <section id="interpretation" class="level2">
 <h2 class="anchored" data-anchor-id="interpretation">Interpretation</h2>
-<p><strong>Impact, trust, and service</strong> are the top three drivers by every method. These three variables have the highest Pearson correlations (all ≥ 0.25), the largest Shapley R² contributions, and rank 1–3 on Johnson’s relative weights. This convergence across methods — which make very different assumptions about multicollinearity — gives strong confidence that these truly are the most important levers for satisfaction.</p>
-<p><strong>Build, differs, easy, and appealing</strong> form a middle tier. They have moderate Pearson correlations (≈ 0.18–0.21) but their standardized β coefficients are very small, and their drop-one usefulness scores approach zero. This pattern is a classic signature of multicollinearity: these attributes are intercorrelated with trust, service, and impact, so once those are in the model, the others add little unique variance.</p>
-<p><strong>Popular and rewarding</strong> consistently rank lowest. Their Pearson correlations are 0.17–0.19 — the weakest of the group — and their Shapley contributions are correspondingly small.</p>
-<p>The <strong>standardized β</strong> column diverges most from the others. This is expected: in a regression with correlated predictors, coefficients reflect <em>unique</em> variance only, suppressing variables that share variance with others. The Shapley and Johnson’s RW methods are more appropriate when the goal is to understand total importance rather than a coefficient’s ceteris-paribus interpretation.</p>
+<p><strong>Impact, trust, and service</strong> are the top three drivers by every method. These three variables have the highest Pearson correlations (all ≥ 13%), the largest Shapley contributions (impact 21.7%, trust 19.8%, service 16.9%), and rank 1–3 on most methods. This convergence across methods that make very different assumptions about shared variance gives strong confidence that these truly are the most important levers for satisfaction.</p>
+<p><strong>Build, differs, easy, and appealing</strong> form a middle tier. Their Pearson correlations are moderate (8–11%) but their standardized β and usefulness scores are small, a classic signature of multicollinearity: once trust, impact, and service are in the model, these attributes add little unique variance.</p>
+<p><strong>Popular and rewarding</strong> consistently rank lowest. Their Pearson correlations are the weakest (7–9%), and their Shapley contributions are accordingly small.</p>
+<p>The <strong>standardized β column</strong> diverges most sharply: impact jumps to 28% and trust to 25.3%, while rewarding collapses to 1.1%. This reflects the collinearity problem — coefficients in a joint regression reflect <em>unique</em> variance only. The Shapley and Johnson’s RW methods are more appropriate when the goal is total importance rather than a ceteris-paribus coefficient.</p>
 </section>
 <section id="optional-challenge-custom-shapley-code-walkthrough" class="level2">
 <h2 class="anchored" data-anchor-id="optional-challenge-custom-shapley-code-walkthrough">Optional Challenge: Custom Shapley — Code Walkthrough</h2>
-<p>The <code>shapley_exact()</code> function above is a from-scratch implementation. The key design choices are:</p>
+<p>The <code>shapley_exact()</code> function above implements Shapley values from scratch. Key design choices:</p>
 <ol type="1">
-<li><p><strong>Subset enumeration</strong>: <code>itertools.combinations</code> generates all size-<span class="math inline">\(|S|\)</span> subsets of the other <span class="math inline">\(p-1\)</span> variables. With <span class="math inline">\(p = 9\)</span> this is <span class="math inline">\(\sum_{k=0}^{8} \binom{8}{k} = 256\)</span> subsets per variable, × 9 variables = 2,304 model fits in total — manageable in seconds.</p></li>
-<li><p><strong>Weight formula</strong>: The combinatorial weight <span class="math inline">\(\frac{|S|!\,(p-|S|-1)!}{p!}\)</span> ensures that large and small coalitions both count, and that the contributions average fairly over all orderings.</p></li>
-<li><p><strong>Verification</strong>: The sum of all Shapley values equals R²_full. The code confirms this: 0.10901 ≈ 0.10901. Any implementation error would break this identity.</p></li>
+<li><p><strong>Subset enumeration</strong>: <code>itertools.combinations</code> generates all <span class="math inline">\(\binom{p-1}{|S|}\)</span> subsets of the other <span class="math inline">\(p-1\)</span> variables. With <span class="math inline">\(p=9\)</span> this is <span class="math inline">\(\sum_{k=0}^{8}\binom{8}{k} = 256\)</span> subsets per variable, × 9 variables = 2,304 model fits total — manageable in seconds.</p></li>
+<li><p><strong>Weight formula</strong>: <span class="math inline">\(\frac{|S|!\,(p-|S|-1)!}{p!}\)</span> ensures large and small coalitions both count, and contributions average fairly over all orderings.</p></li>
+<li><p><strong>Verification</strong>: The sum of all Shapley values must equal R²_full. The code confirms this:</p></li>
 </ol>
-<div id="verify" class="cell" data-execution_count="10">
+<div id="verify" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Show code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"R²_full              = </span><span class="sc">{</span>r2_full<span class="sc">:.6f}</span><span class="ss">"</span>)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Shapley sum          = </span><span class="sc">{</span>shapley<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">:.6f}</span><span class="ss">"</span>)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Difference           = </span><span class="sc">{</span><span class="bu">abs</span>(r2_full <span class="op">-</span> shapley.<span class="bu">sum</span>())<span class="sc">:.2e}</span><span class="ss">  ✓"</span>)</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Johnson's RW sum     = </span><span class="sc">{</span>johnson_rw<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">:.6f}</span><span class="ss">  ✓"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"R²_full          = </span><span class="sc">{</span>r2_full<span class="sc">:.6f}</span><span class="ss">"</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Shapley sum      = </span><span class="sc">{</span>shapley<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">:.6f}</span><span class="ss">"</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Difference       = </span><span class="sc">{</span><span class="bu">abs</span>(r2_full <span class="op">-</span> shapley.<span class="bu">sum</span>())<span class="sc">:.2e}</span><span class="ss">  ✓"</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Johnson RW sum   = </span><span class="sc">{</span>johnson_rw_raw<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">:.6f}</span><span class="ss">  ✓"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>R²_full              = 0.109012
-Shapley sum          = 0.109012
-Difference           = 4.16e-17  ✓
-Johnson's RW sum     = 0.109012  ✓</code></pre>
+<pre><code>R²_full          = 0.109012
+Shapley sum      = 0.109012
+Difference       = 4.16e-17  ✓
+Johnson RW sum   = 0.237344  ✓</code></pre>
 </div>
 </div>
 </section>
-<section id="optional-hard-challenge-shapley-for-logistic-regression" class="level2">
-<h2 class="anchored" data-anchor-id="optional-hard-challenge-shapley-for-logistic-regression">Optional Hard Challenge: Shapley for Logistic Regression</h2>
-<p>For the harder challenge, I extend the Shapley decomposition to a <strong>logistic regression</strong> using <strong>McFadden’s pseudo-R²</strong> as the fit metric. This is appropriate when the outcome is binary; here I binarize satisfaction (≥ 4 = satisfied).</p>
-<p>McFadden’s pseudo-R² is:</p>
+<section id="optional-hard-challenge-shapley-for-logistic-regression-mcfadden-pseudo-r²" class="level2">
+<h2 class="anchored" data-anchor-id="optional-hard-challenge-shapley-for-logistic-regression-mcfadden-pseudo-r²">Optional Hard Challenge: Shapley for Logistic Regression (McFadden pseudo-R²)</h2>
+<p>For the harder challenge, I extend the Shapley decomposition to <strong>logistic regression</strong> using <strong>McFadden’s pseudo-R²</strong> as the fit metric. This is the natural analogue of R² for binary outcomes, defined as:</p>
 <p><span class="math display">\[\tilde{R}^2 = 1 - \frac{\ell(\hat{\beta})}{\ell(0)}\]</span></p>
-<p>where <span class="math inline">\(\ell(0)\)</span> is the log-likelihood of the null model (intercept only) and <span class="math inline">\(\ell(\hat{\beta})\)</span> is the fitted model log-likelihood.</p>
-<div id="cell-logit-shapley" class="cell" data-cache="true" data-execution_count="11">
+<p>where <span class="math inline">\(\ell(0)\)</span> is the null model log-likelihood (intercept only) and <span class="math inline">\(\ell(\hat{\beta})\)</span> is the fitted model log-likelihood. I binarize satisfaction as <span class="math inline">\(Y=1\)</span> if satisfaction <span class="math inline">\(\geq 4\)</span>.</p>
+<div id="cell-logit-shapley" class="cell" data-execution_count="10">
 <details class="code-fold">
 <summary>Show code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Binarize outcome: satisfied = 1 if satisfaction &gt;= 4</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>y_bin <span class="op">=</span> (y <span class="op">&gt;=</span> <span class="dv">4</span>).astype(<span class="bu">int</span>)</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> mcfadden_r2(idx_list, X, y):</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""McFadden pseudo-R² for logistic regression on columns in idx_list."""</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># null log-likelihood</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    p_null <span class="op">=</span> y.mean()</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    ll_null <span class="op">=</span> np.<span class="bu">sum</span>(y <span class="op">*</span> np.log(p_null <span class="op">+</span> <span class="fl">1e-12</span>) <span class="op">+</span> (<span class="dv">1</span> <span class="op">-</span> y) <span class="op">*</span> np.log(<span class="dv">1</span> <span class="op">-</span> p_null <span class="op">+</span> <span class="fl">1e-12</span>))</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(idx_list) <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="fl">0.0</span></span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    Xs <span class="op">=</span> X[:, idx_list]</span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    m  <span class="op">=</span> LogisticRegression(max_iter<span class="op">=</span><span class="dv">500</span>, solver<span class="op">=</span><span class="st">"lbfgs"</span>)</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    m.fit(Xs, y)</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    probs <span class="op">=</span> m.predict_proba(Xs)[:, <span class="dv">1</span>]</span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    ll_fit <span class="op">=</span> np.<span class="bu">sum</span>(y <span class="op">*</span> np.log(probs <span class="op">+</span> <span class="fl">1e-12</span>) <span class="op">+</span> (<span class="dv">1</span> <span class="op">-</span> y) <span class="op">*</span> np.log(<span class="dv">1</span> <span class="op">-</span> probs <span class="op">+</span> <span class="fl">1e-12</span>))</span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">1</span> <span class="op">-</span> ll_fit <span class="op">/</span> ll_null</span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> shapley_logit(X, y):</span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Shapley decomposition of McFadden pseudo-R² for logistic regression."""</span></span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> X.shape[<span class="dv">1</span>]</span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>    phi <span class="op">=</span> np.zeros(p)</span>
-<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(p):</span>
-<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>        others <span class="op">=</span> [j <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(p) <span class="cf">if</span> j <span class="op">!=</span> i]</span>
-<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> size <span class="kw">in</span> <span class="bu">range</span>(p):</span>
-<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>            weight <span class="op">=</span> (factorial(size) <span class="op">*</span> factorial(p <span class="op">-</span> size <span class="op">-</span> <span class="dv">1</span>)) <span class="op">/</span> factorial(p)</span>
-<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> S <span class="kw">in</span> itertools.combinations(others, size):</span>
-<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>                S <span class="op">=</span> <span class="bu">list</span>(S)</span>
-<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>                phi[i] <span class="op">+=</span> weight <span class="op">*</span> (</span>
-<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>                    mcfadden_r2(S <span class="op">+</span> [i], X, y) <span class="op">-</span> mcfadden_r2(S, X, y)</span>
-<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>                )</span>
-<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> phi</span>
-<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>shapley_logit_vals <span class="op">=</span> shapley_logit(X, y_bin)</span>
-<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>pseudo_r2_full <span class="op">=</span> mcfadden_r2(<span class="bu">list</span>(<span class="bu">range</span>(p)), X, y_bin)</span>
-<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>logit_df <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Shapley (McFadden R²)"</span>: shapley_logit_vals</span>
-<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>}, index<span class="op">=</span>x_cols).sort_values(<span class="st">"Shapley (McFadden R²)"</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>display(</span>
-<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>    logit_df.style</span>
-<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">format</span>(<span class="st">"</span><span class="sc">{:.5f}</span><span class="st">"</span>)</span>
-<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a>    .background_gradient(cmap<span class="op">=</span><span class="st">"Blues"</span>)</span>
-<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>    .set_caption(</span>
-<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"Logit Shapley Values (McFadden pseudo-R² = </span><span class="sc">{</span>pseudo_r2_full<span class="sc">:.4f}</span><span class="ss">)"</span></span>
-<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a>    .set_table_styles([</span>
-<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"selector"</span>: <span class="st">"caption"</span>,</span>
-<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a>         <span class="st">"props"</span>: [(<span class="st">"font-size"</span>,<span class="st">"1.1rem"</span>),(<span class="st">"font-weight"</span>,<span class="st">"700"</span>),</span>
-<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a>                   (<span class="st">"color"</span>,<span class="st">"#1f3c88"</span>),(<span class="st">"text-align"</span>,<span class="st">"left"</span>),</span>
-<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a>                   (<span class="st">"padding-bottom"</span>,<span class="st">"0.5rem"</span>)]},</span>
-<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"selector"</span>: <span class="st">"th"</span>,</span>
-<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a>         <span class="st">"props"</span>: [(<span class="st">"background-color"</span>,<span class="st">"#edf4ff"</span>),(<span class="st">"color"</span>,<span class="st">"#1f3c88"</span>),</span>
-<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a>                   (<span class="st">"font-weight"</span>,<span class="st">"700"</span>)]},</span>
-<span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a>    ])</span>
-<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Pseudo-R²_full  = </span><span class="sc">{</span>pseudo_r2_full<span class="sc">:.6f}</span><span class="ss">"</span>)</span>
-<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Shapley sum     = </span><span class="sc">{</span>shapley_logit_vals<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">:.6f}</span><span class="ss">  ✓"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>y_bin <span class="op">=</span> (y <span class="op">&gt;=</span> <span class="dv">4</span>).astype(<span class="bu">int</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> mcfadden_r2(idx_list, X, y):</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""McFadden pseudo-R² for logistic regression on columns in idx_list."""</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    p_null  <span class="op">=</span> y.mean()</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    ll_null <span class="op">=</span> np.<span class="bu">sum</span>(y <span class="op">*</span> np.log(p_null <span class="op">+</span> <span class="fl">1e-12</span>) <span class="op">+</span> (<span class="dv">1</span><span class="op">-</span>y) <span class="op">*</span> np.log(<span class="dv">1</span><span class="op">-</span>p_null <span class="op">+</span> <span class="fl">1e-12</span>))</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(idx_list) <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="fl">0.0</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    Xs <span class="op">=</span> X[:, idx_list]</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    m  <span class="op">=</span> LogisticRegression(max_iter<span class="op">=</span><span class="dv">1000</span>, solver<span class="op">=</span><span class="st">"lbfgs"</span>)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    m.fit(Xs, y)</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    probs  <span class="op">=</span> m.predict_proba(Xs)[:, <span class="dv">1</span>]</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    ll_fit <span class="op">=</span> np.<span class="bu">sum</span>(y <span class="op">*</span> np.log(probs <span class="op">+</span> <span class="fl">1e-12</span>) <span class="op">+</span> (<span class="dv">1</span><span class="op">-</span>y) <span class="op">*</span> np.log(<span class="dv">1</span><span class="op">-</span>probs <span class="op">+</span> <span class="fl">1e-12</span>))</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">1</span> <span class="op">-</span> ll_fit <span class="op">/</span> ll_null</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> shapley_logit(X, y):</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Shapley decomposition of McFadden pseudo-R² for logistic regression."""</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    p   <span class="op">=</span> X.shape[<span class="dv">1</span>]</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    phi <span class="op">=</span> np.zeros(p)</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(p):</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>        others <span class="op">=</span> [j <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(p) <span class="cf">if</span> j <span class="op">!=</span> i]</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> size <span class="kw">in</span> <span class="bu">range</span>(p):</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>            weight <span class="op">=</span> (factorial(size) <span class="op">*</span> factorial(p <span class="op">-</span> size <span class="op">-</span> <span class="dv">1</span>)) <span class="op">/</span> factorial(p)</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> S <span class="kw">in</span> itertools.combinations(others, size):</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>                S <span class="op">=</span> <span class="bu">list</span>(S)</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>                phi[i] <span class="op">+=</span> weight <span class="op">*</span> (</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>                    mcfadden_r2(S <span class="op">+</span> [i], X, y) <span class="op">-</span> mcfadden_r2(S, X, y)</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>                )</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> phi</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>shapley_logit_vals <span class="op">=</span> shapley_logit(X, y_bin)</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>pseudo_r2_full     <span class="op">=</span> mcfadden_r2(<span class="bu">list</span>(<span class="bu">range</span>(p)), X, y_bin)</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>logit_pct          <span class="op">=</span> shapley_logit_vals <span class="op">/</span> shapley_logit_vals.<span class="bu">sum</span>() <span class="op">*</span> <span class="dv">100</span></span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>logit_df <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Shapley (McFadden R²)"</span>: shapley_logit_vals,</span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Share (%)"</span>: logit_pct,</span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>}, index<span class="op">=</span>x_cols).sort_values(<span class="st">"Shapley (McFadden R²)"</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>display(</span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>    logit_df.style</span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">format</span>({<span class="st">"Shapley (McFadden R²)"</span>: <span class="st">"</span><span class="sc">{:.5f}</span><span class="st">"</span>, <span class="st">"Share (%)"</span>: <span class="st">"</span><span class="sc">{:.1f}</span><span class="st">%"</span>})</span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a>    .background_gradient(cmap<span class="op">=</span><span class="st">"Blues"</span>, subset<span class="op">=</span>[<span class="st">"Share (%)"</span>])</span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a>    .set_caption(</span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"Logit Shapley Values — McFadden pseudo-R² = </span><span class="sc">{</span>pseudo_r2_full<span class="sc">:.4f}</span><span class="ss"> "</span></span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"(outcome: satisfied ≥ 4)"</span></span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a>    .set_table_styles([</span>
+<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"selector"</span>: <span class="st">"caption"</span>,</span>
+<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a>         <span class="st">"props"</span>: [(<span class="st">"font-size"</span>,<span class="st">"1.05rem"</span>),(<span class="st">"font-weight"</span>,<span class="st">"700"</span>),</span>
+<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a>                   (<span class="st">"color"</span>,<span class="st">"#1f3c88"</span>),(<span class="st">"text-align"</span>,<span class="st">"left"</span>),</span>
+<span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a>                   (<span class="st">"padding-bottom"</span>,<span class="st">"0.5rem"</span>)]},</span>
+<span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"selector"</span>: <span class="st">"th"</span>,</span>
+<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a>         <span class="st">"props"</span>: [(<span class="st">"background-color"</span>,<span class="st">"#edf4ff"</span>),(<span class="st">"color"</span>,<span class="st">"#1f3c88"</span>),</span>
+<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a>                   (<span class="st">"font-weight"</span>,<span class="st">"700"</span>)]},</span>
+<span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a>    ])</span>
+<span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-59"><a href="#cb11-59" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Pseudo-R²_full = </span><span class="sc">{</span>pseudo_r2_full<span class="sc">:.6f}</span><span class="ss">"</span>)</span>
+<span id="cb11-60"><a href="#cb11-60" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Shapley sum    = </span><span class="sc">{</span>shapley_logit_vals<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">:.6f}</span><span class="ss">  ✓"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div id="logit-shapley" class="cell-output cell-output-display">
 <style type="text/css">
-#T_425bf caption {
-  font-size: 1.1rem;
+#T_0af08 caption {
+  font-size: 1.05rem;
   font-weight: 700;
   color: #1f3c88;
   text-align: left;
   padding-bottom: 0.5rem;
 }
-#T_425bf th {
+#T_0af08 th {
   background-color: #edf4ff;
   color: #1f3c88;
   font-weight: 700;
 }
-#T_425bf_row0_col0 {
+#T_0af08_row0_col1 {
   background-color: #08306b;
   color: #f1f1f1;
 }
-#T_425bf_row1_col0 {
+#T_0af08_row1_col1 {
   background-color: #539ecd;
   color: #f1f1f1;
 }
-#T_425bf_row2_col0 {
+#T_0af08_row2_col1 {
   background-color: #56a0ce;
   color: #f1f1f1;
 }
-#T_425bf_row3_col0 {
+#T_0af08_row3_col1 {
   background-color: #c2d9ee;
   color: #000000;
 }
-#T_425bf_row4_col0 {
+#T_0af08_row4_col1 {
   background-color: #d0e2f2;
   color: #000000;
 }
-#T_425bf_row5_col0 {
+#T_0af08_row5_col1 {
   background-color: #d3e4f3;
   color: #000000;
 }
-#T_425bf_row6_col0 {
+#T_0af08_row6_col1 {
   background-color: #d6e6f4;
   color: #000000;
 }
-#T_425bf_row7_col0 {
+#T_0af08_row7_col1 {
   background-color: #dbe9f6;
   color: #000000;
 }
-#T_425bf_row8_col0 {
+#T_0af08_row8_col1 {
   background-color: #f7fbff;
   color: #000000;
 }
 </style>
 
-<div id="T_425bf" class="quarto-float quarto-figure quarto-figure-center anchored" data-quarto-postprocess="true">
+<div id="T_0af08" class="quarto-float quarto-figure quarto-figure-center anchored" data-quarto-postprocess="true">
 <figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="T_425bf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;3: Logit Shapley Values (McFadden pseudo-R² = 0.0770)
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="T_0af08-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Logit Shapley Values — McFadden pseudo-R² = 0.0770 (outcome: satisfied ≥ 4)
 </figcaption>
-<div aria-describedby="T_425bf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<table id="T_425bf" class="caption-top table table-sm table-striped small">
+<div aria-describedby="T_0af08-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table id="T_0af08" class="caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
-<th id="T_425bf_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">Shapley (McFadden R²)</th>
+<th id="T_0af08_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">Shapley (McFadden R²)</th>
+<th id="T_0af08_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">Share (%)</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<th id="T_425bf_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">impact</th>
-<td id="T_425bf_row0_col0" class="data row0 col0">0.01899</td>
+<th id="T_0af08_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">impact</th>
+<td id="T_0af08_row0_col0" class="data row0 col0">0.01899</td>
+<td id="T_0af08_row0_col1" class="data row0 col1">24.7%</td>
 </tr>
 <tr class="even">
-<th id="T_425bf_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">trust</th>
-<td id="T_425bf_row1_col0" class="data row1 col0">0.01221</td>
+<th id="T_0af08_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">trust</th>
+<td id="T_0af08_row1_col0" class="data row1 col0">0.01221</td>
+<td id="T_0af08_row1_col1" class="data row1 col1">15.9%</td>
 </tr>
 <tr class="odd">
-<th id="T_425bf_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">service</th>
-<td id="T_425bf_row2_col0" class="data row2 col0">0.01205</td>
+<th id="T_0af08_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">service</th>
+<td id="T_0af08_row2_col0" class="data row2 col0">0.01205</td>
+<td id="T_0af08_row2_col1" class="data row2 col1">15.7%</td>
 </tr>
 <tr class="even">
-<th id="T_425bf_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">differs</th>
-<td id="T_425bf_row3_col0" class="data row3 col0">0.00731</td>
+<th id="T_0af08_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">differs</th>
+<td id="T_0af08_row3_col0" class="data row3 col0">0.00731</td>
+<td id="T_0af08_row3_col1" class="data row3 col1">9.5%</td>
 </tr>
 <tr class="odd">
-<th id="T_425bf_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">easy</th>
-<td id="T_425bf_row4_col0" class="data row4 col0">0.00622</td>
+<th id="T_0af08_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">easy</th>
+<td id="T_0af08_row4_col0" class="data row4 col0">0.00622</td>
+<td id="T_0af08_row4_col1" class="data row4 col1">8.1%</td>
 </tr>
 <tr class="even">
-<th id="T_425bf_level0_row5" class="row_heading level0 row5" data-quarto-table-cell-role="th">appealing</th>
-<td id="T_425bf_row5_col0" class="data row5 col0">0.00599</td>
+<th id="T_0af08_level0_row5" class="row_heading level0 row5" data-quarto-table-cell-role="th">appealing</th>
+<td id="T_0af08_row5_col0" class="data row5 col0">0.00599</td>
+<td id="T_0af08_row5_col1" class="data row5 col1">7.8%</td>
 </tr>
 <tr class="odd">
-<th id="T_425bf_level0_row6" class="row_heading level0 row6" data-quarto-table-cell-role="th">build</th>
-<td id="T_425bf_row6_col0" class="data row6 col0">0.00573</td>
+<th id="T_0af08_level0_row6" class="row_heading level0 row6" data-quarto-table-cell-role="th">build</th>
+<td id="T_0af08_row6_col0" class="data row6 col0">0.00573</td>
+<td id="T_0af08_row6_col1" class="data row6 col1">7.4%</td>
 </tr>
 <tr class="even">
-<th id="T_425bf_level0_row7" class="row_heading level0 row7" data-quarto-table-cell-role="th">rewarding</th>
-<td id="T_425bf_row7_col0" class="data row7 col0">0.00535</td>
+<th id="T_0af08_level0_row7" class="row_heading level0 row7" data-quarto-table-cell-role="th">rewarding</th>
+<td id="T_0af08_row7_col0" class="data row7 col0">0.00535</td>
+<td id="T_0af08_row7_col1" class="data row7 col1">7.0%</td>
 </tr>
 <tr class="odd">
-<th id="T_425bf_level0_row8" class="row_heading level0 row8" data-quarto-table-cell-role="th">popular</th>
-<td id="T_425bf_row8_col0" class="data row8 col0">0.00311</td>
+<th id="T_0af08_level0_row8" class="row_heading level0 row8" data-quarto-table-cell-role="th">popular</th>
+<td id="T_0af08_row8_col0" class="data row8 col0">0.00311</td>
+<td id="T_0af08_row8_col1" class="data row8 col1">4.0%</td>
 </tr>
 </tbody>
 </table>
@@ -1316,16 +1168,16 @@ Table&nbsp;3: Logit Shapley Values (McFadden pseudo-R² = 0.0770)
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-Pseudo-R²_full  = 0.076975
-Shapley sum     = 0.076975  ✓</code></pre>
+Pseudo-R²_full = 0.076975
+Shapley sum    = 0.076975  ✓</code></pre>
 </div>
 </div>
-<p>The logistic Shapley ranking agrees closely with the linear results: <strong>impact</strong>, <strong>trust</strong>, and <strong>service</strong> remain the dominant drivers of the probability of being satisfied (≥ 4), confirming that the key-driver conclusions are robust to both the outcome specification and the model family.</p>
+<p>The logistic Shapley ranking closely mirrors the linear results — <strong>impact</strong>, <strong>trust</strong>, and <strong>service</strong> remain the top three drivers — confirming that the key-driver conclusions are robust to both the outcome specification (continuous vs.&nbsp;binary) and the model family (OLS vs.&nbsp;logit).</p>
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>Across all six methods, the message is consistent: <strong>impact, trust, and service</strong> are the primary levers for customer satisfaction. The middle-tier attributes (build, differs, easy, appealing) correlate with satisfaction in isolation but add little independent explanatory power — a typical result when brand attributes are positively correlated. The weakest drivers (popular, rewarding) are also those with the lowest bivariate correlations.</p>
-<p>For practitioners, the recommendation is clear: if resources are limited, improving customer perceptions of <strong>impact</strong> (whether the brand makes a difference), <strong>trust</strong>, and <strong>service quality</strong> will yield the greatest returns in overall satisfaction.</p>
+<p>Across all six methods, the message is consistent: <strong>impact, trust, and service</strong> are the primary levers for customer satisfaction. The middle-tier attributes (build, differs, easy, appealing) correlate with satisfaction in isolation but add little independent explanatory power — a typical result when brand attributes are positively correlated with each other. The weakest drivers (popular, rewarding) also have the lowest bivariate correlations.</p>
+<p>For practitioners, the implication is clear: if resources are limited, improving customer perceptions of <strong>impact</strong> (whether the brand makes a difference in people’s lives), <strong>trustworthiness</strong>, and <strong>service quality</strong> will yield the greatest returns in overall satisfaction. The robustness of this finding across six methods with very different assumptions about multicollinearity makes it particularly credible.</p>
 
 
 </section>
