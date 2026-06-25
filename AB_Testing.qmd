@@ -231,7 +231,7 @@ theta_hat <- pA_hat - pB_hat
 
 A landing page usually asks for only a tiny action from a visitor: one click, one email address, one moment of attention. Yet small wording changes can make that request feel either inviting or easy to ignore. That is exactly why call-to-action copy is such a natural setting for A/B testing.
 
-Imagine a homepage with a newsletter signup box. One version of the page uses the line **CTA A**: "Sign up for our newsletter here!" A second version uses **CTA B**: "Stay up to date by signing up!" The business question is simple: which message leads to more subscriptions?
+Imagine a homepage with a newsletter signup box. One version of the page uses the line **CTA A**: "Sign up for our newsletter here!" A second version uses **CTA B**: "Stay up to date by signing up!" The business question is simple: which message leads to more subscriptions? This seemingly small difference in wording can have a meaningful impact on user behavior.
 
 An A/B test answers that question by splitting incoming traffic at random. Some visitors see version A and others see version B. Once enough people have passed through the page, the two sign-up rates can be compared. Behind that very practical workflow sits a deeper statistical story about estimation, uncertainty, sampling variation, and false positives. The goal of this post is to use one simple experiment to walk through those core ideas in classical frequentist inference.
 
@@ -331,7 +331,7 @@ The beginning of the curve is chaotic. With only a handful of observations, one 
 
 A point estimate answers only one question: what effect seems most plausible given the observed data? It does not answer the equally important question of how noisy that estimate is. Two experiments may produce the same estimated treatment effect but differ dramatically in how uncertain that estimate should feel.
 
-The bootstrap offers a practical way to measure that uncertainty. Rather than relying entirely on a closed-form formula, the bootstrap repeatedly resamples from the observed data, computes the statistic of interest in each resample, and then uses the spread of those resampled statistics as an estimate of the standard error.
+The bootstrap offers a practical way to measure that uncertainty. This approach is especially useful when analytical solutions are complex or unavailable, making bootstrap a flexible tool for uncertainty estimation. Rather than relying entirely on a closed-form formula, the bootstrap repeatedly resamples from the observed data, computes the statistic of interest in each resample, and then uses the spread of those resampled statistics as an estimate of the standard error.
 
 ```{r}
 #| include: false
@@ -518,6 +518,7 @@ hypothesis_tbl |>
 ```
 
 The p-value is small enough to reject the null at conventional significance levels. In practical terms, the observed gap between the two CTAs is too large to dismiss as ordinary sampling noise. The data point toward a real performance difference.
+This means that the difference between the two CTAs is not only statistically significant, but also potentially meaningful for real-world decision-making.
 
 ## The T-Test as a Regression
 
@@ -672,4 +673,4 @@ The result is sobering. A process that feels like "just checking in" can nearly 
 
 A/B testing often looks like a lightweight product tool, but under the surface it is a compact lesson in frequentist statistics. The difference in observed conversion rates is an estimator; the Law of Large Numbers explains why it stabilizes; the bootstrap shows how uncertainty can be quantified; the Central Limit Theorem explains why Normal-based inference becomes reasonable; and hypothesis testing turns that logic into a formal decision rule.
 
-The regression reframing shows that this same experiment fits naturally into a broader modeling framework, while the peeking example shows how easy it is to misuse statistical evidence when operational convenience takes over. That, in the end, may be the most useful lesson from the entire exercise: the strength of an A/B test comes not only from having data, but from respecting the statistical logic that makes those data trustworthy.
+The regression reframing shows that this same experiment fits naturally into a broader modeling framework, while the peeking example shows how easy it is to misuse statistical evidence when operational convenience takes over. That, in the end, may be the most useful lesson from the entire exercise: the strength of an A/B test comes not only from having data, but from respecting the statistical logic that makes those data trustworthy. This also highlights the importance of designing experiments carefully, as even small implementation choices can affect the validity of the conclusions.
